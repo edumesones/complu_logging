@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complu Logging - Inicio</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Complu Logging</h1>
+            <p class="date-display" id="currentDate"></p>
+        </header>
+        
+        <main class="main-buttons">
+            <button class="nav-button pc-favor" onclick="window.location.href='pc-favor.html'">
+                <span class="button-icon">⚽</span>
+                <span class="button-text">PC A FAVOR</span>
+            </button>
+            
+            <button class="nav-button pc-contra" onclick="window.location.href='pc-contra.html'">
+                <span class="button-icon">🥅</span>
+                <span class="button-text">PC EN CONTRA</span>
+            </button>
+        </main>
+        
+        <footer>
+            <button class="email-button" onclick="sendEmail()">
+                📧 Enviar Reporte por Email
+            </button>
+            <button class="clear-button" onclick="limpiarDatosManual()" style="margin-top: 10px;">
+                🗑️ Limpiar Todos los Datos
+            </button>
+        </footer>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html> 

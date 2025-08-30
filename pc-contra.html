@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PC EN CONTRA - Complu Logging</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>PC EN CONTRA</h1>
+            <div class="match-info">
+                <p><strong>Fecha: <span id="currentDateContra"></span></strong></p>
+            </div>
+            <button class="back-button" onclick="window.location.href='index.html'">← Volver</button>
+        </header>
+        
+        <main class="table-container">
+            <table class="stats-table">
+                <thead>
+                    <tr>
+                        <th>Jugador</th>
+                        <th>PENALTY</th>
+                        <th>PENALTY_TONTO</th>
+                    </tr>
+                </thead>
+                <tbody id="contraTableBody">
+                    <!-- Los jugadores se generan dinámicamente -->
+                </tbody>
+            </table>
+        </main>
+        
+        <footer>
+            <button class="save-button" onclick="saveContraData()">💾 Guardar Datos</button>
+        </footer>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html> 

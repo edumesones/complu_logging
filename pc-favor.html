@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PC A FAVOR - Complu Logging</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>PC A FAVOR</h1>
+            <div class="match-info">
+                <p><strong>Fecha: <span id="currentDateFavor"></span></strong></p>
+            </div>
+            <button class="back-button" onclick="window.location.href='index.html'">← Volver</button>
+        </header>
+        
+        <main class="table-container">
+            <table class="stats-table">
+                <thead>
+                    <tr>
+                        <th>Jugador</th>
+                        <th>SACA_BIEN</th>
+                        <th>SACA_MAL</th>
+                        <th>PARA_BIEN</th>
+                        <th>PARA_MAL</th>
+                        <th>GOL</th>
+                        <th>TIRO_PORTERIA</th>
+                        <th>TIRO_FUERA</th>
+                    </tr>
+                </thead>
+                <tbody id="favorTableBody">
+                    <!-- Los jugadores se generan dinámicamente -->
+                </tbody>
+            </table>
+        </main>
+        
+        <footer>
+            <button class="save-button" onclick="saveFavorData()">💾 Guardar Datos</button>
+        </footer>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html> 
