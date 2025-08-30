@@ -1,182 +1,181 @@
-# ⚽ Complu Logging - Sistema de Estadísticas de Fútbol
+# ⚽ Complu Logging - Aplicación de Estadísticas de Fútbol
 
-## 📱 Descripción
-Aplicación web para registrar estadísticas de partidos de fútbol con dos equipos: PC A FAVOR y PC EN CONTRA. Permite contabilizar acciones como goles, tiros, penalties, etc., y enviar reportes por email.
+Aplicación web para registrar y enviar estadísticas de partidos de fútbol por email.
 
 ## 🚀 Características
-- **Pantalla Principal**: Navegación a las dos secciones
-- **PC A FAVOR**: Estadísticas de ataque (goles, tiros, saques, etc.)
-- **PC EN CONTRA**: Estadísticas de defensa (penalties)
-- **Almacenamiento Local**: Los datos se guardan automáticamente en el navegador
-- **Envío por Email**: Genera reportes HTML y los envía por email
-- **Diseño Responsive**: Optimizado para tablet Android y otros dispositivos
 
-## 📋 Estadísticas Registradas
+- **PC A FAVOR**: Registro de SACA_BIEN, SACA_MAL, PARA_BIEN, PARA_MAL, GOL, TIRO_PORTERIA, TIRO_FUERA
+- **PC EN CONTRA**: Registro de PENALTY y PENALTY_TONTO
+- **18 jugadores** predefinidos
+- **Envío automático por email** con reportes en HTML
+- **Reinicio automático diario** de contadores
+- **Botón manual** para limpiar datos
+- **Interfaz responsive** para tablets Android
 
-### PC A FAVOR
-- **SACA_BIEN**: Saques bien ejecutados
-- **SACA_MAL**: Saques mal ejecutados
-- **PARA_BIEN**: Pases bien ejecutados
-- **PARA_MAL**: Pases mal ejecutados
-- **GOL**: Goles marcados
-- **TIRO_PORTERIA**: Tiros a portería
-- **TIRO_FUERA**: Tiros fuera de la portería
+## 📱 Compatibilidad
 
-### PC EN CONTRA
-- **PENALTY**: Penalties concedidos
-- **PENALTY_TONTO**: Penalties tontos concedidos
+- ✅ **PC/Desktop** (Chrome, Firefox, Safari, Edge)
+- ✅ **Tablets Android** (Chrome, Firefox)
+- ✅ **Dispositivos iOS** (Safari)
+- ❌ **No requiere Java** - Solo navegador web
 
-## 🎯 Jugadores Incluidos
-1. Fer
-2. Antuene
-3. Juan Muñoz
-4. Iván
-5. David
-6. Manu
-7. Fresnillo
-8. Ricardo
-9. Jorge Fernández
-10. Javi f
-11. Mont
-12. Bou
-13. Lucas Pinto
-14. José San Millán
-15. Edu
-16. Nico Gonzalo
-17. Aarón
-18. Juan García
+## 🛠️ Instalación y Configuración
 
-## ⚙️ Configuración del Email
+### 1. Configurar EmailJS
 
-### Paso 1: Crear cuenta en EmailJS
 1. Ve a [https://www.emailjs.com/](https://www.emailjs.com/)
 2. Crea una cuenta gratuita
-3. Verifica tu email
+3. Configura un servicio de email (Gmail, Outlook, etc.)
+4. Crea una plantilla de email
+5. Actualiza `config.js` con tus credenciales
 
-### Paso 2: Configurar servicio de email
-1. En EmailJS, ve a "Email Services"
-2. Haz clic en "Add New Service"
-3. Selecciona tu proveedor de email (Gmail, Outlook, etc.)
-4. Sigue las instrucciones para autorizar
-5. Anota el **Service ID**
+### 2. Configurar GitHub Pages
 
-### Paso 3: Crear plantilla de email
-1. Ve a "Email Templates"
-2. Haz clic en "Create New Template"
-3. Usa esta plantilla básica:
+1. Ve a tu repositorio: [https://github.com/edumesones/complu_logging](https://github.com/edumesones/complu_logging)
+2. Ve a **Settings** → **Pages**
+3. En **Source**, selecciona **Deploy from a branch**
+4. En **Branch**, selecciona **main** y **/(root)**
+5. Haz clic en **Save**
+6. Espera unos minutos para que se despliegue
+
+### 3. Acceder desde tu Tablet
+
+- **URL pública**: `https://edumesones.github.io/complu_logging/`
+- **Acceso directo**: Crea un bookmark en tu tablet
+- **Funciona offline**: Los datos se guardan localmente
+
+## 📧 Configuración de EmailJS
+
+### Archivo `config.js`
+
+```javascript
+const EMAILJS_CONFIG = {
+    serviceId: 'TU_SERVICE_ID',        // Del paso 2
+    templateId: 'TU_TEMPLATE_ID',      // Del paso 3  
+    userId: 'TU_USER_ID',              // Del paso 4
+    toEmail: 'email1@gmail.com, email2@gmail.com'  // Múltiples emails separados por coma
+};
+```
+
+### Plantilla EmailJS
+
+Usa esta plantilla HTML en EmailJS:
 
 ```html
 <!DOCTYPE html>
 <html>
 <head>
     <title>Reporte Complu Logging</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1000px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #4CAF50, #45a049); color: white; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 20px; }
+        .section { margin-bottom: 30px; }
+        .section h2 { color: #333; border-bottom: 2px solid #4CAF50; padding-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 12px; }
+        th, td { border: 1px solid #ddd; padding: 6px; text-align: center; }
+        th { background-color: #f8f9fa; font-weight: bold; }
+        .jugador { text-align: left; font-weight: bold; min-width: 120px; }
+        .total-row { background-color: #e8f5e8; font-weight: bold; }
+        .fecha-info { background: #e3f2fd; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #2196F3; }
+    </style>
 </head>
 <body>
-    <h1>Reporte de Partido</h1>
-    <p><strong>Fecha:</strong> {{fecha}}</p>
-    <p><strong>Asunto:</strong> {{subject}}</p>
-    <div>{{message}}</div>
+    <div class="container">
+        <div class="header">
+            <h1>⚽ Reporte Complu Logging</h1>
+        </div>
+        
+        <div class="fecha-info">
+            <h3>📅 Información del Partido</h3>
+            <p><strong>Fecha:</strong> {{fecha}}</p>
+        </div>
+        
+        <div class="section">
+            <h2>🏆 PC A FAVOR</h2>
+            {{{tabla_favor}}}
+        </div>
+        
+        <div class="section">
+            <h2>🛡️ PC EN CONTRA</h2>
+            {{{tabla_contra}}}
+        </div>
+        
+        <div class="section">
+            <h2>📊 Resumen</h2>
+            {{{resumen}}}
+        </div>
+    </div>
 </body>
 </html>
 ```
 
-4. Anota el **Template ID**
+**IMPORTANTE**: Usa `{{{tabla_favor}}}`, `{{{tabla_contra}}}` y `{{{resumen}}}` (triple llave) para renderizar HTML.
 
-### Paso 4: Obtener User ID
-1. Ve a "Account" → "API Keys"
-2. Copia tu **Public Key**
+## 🔄 Uso Diario
 
-### Paso 5: Actualizar configuración
-En `script.js`, actualiza estas líneas:
+1. **Abrir la aplicación** en tu tablet
+2. **Registrar estadísticas** usando los botones + y -
+3. **Enviar reporte** con el botón "📧 Enviar Reporte por Email"
+4. **Los contadores se reinician automáticamente** cada día
+5. **Usar "Limpiar Datos"** para reset manual
 
-```javascript
-const EMAILJS_CONFIG = {
-    serviceId: 'TU_SERVICE_ID_AQUI',
-    templateId: 'TU_TEMPLATE_ID_AQUI',
-    userId: 'TU_USER_ID_AQUI'
-};
+## 📁 Estructura del Proyecto
+
+```
+complu_logging/
+├── index.html          # Página principal
+├── pc-favor.html       # Tabla PC A FAVOR
+├── pc-contra.html      # Tabla PC EN CONTRA
+├── script.js           # Lógica JavaScript
+├── styles.css          # Estilos CSS
+├── config.js           # Configuración EmailJS
+└── README.md           # Este archivo
 ```
 
-## 📱 Cómo usar en tu Tablet Android
+## 🚀 Despliegue
 
-### Opción 1: Servidor Local (Recomendado para desarrollo)
-1. **En tu ordenador**: Abre una terminal en la carpeta del proyecto
-2. **Ejecuta**: `python -m http.server 8000` (o instala Live Server en VS Code)
-3. **En tu tablet**: Abre el navegador y ve a `http://TU_IP_ORDENADOR:8000`
-4. **Para encontrar tu IP**: En Windows, ejecuta `ipconfig` en la terminal
+### GitHub Pages (Recomendado)
+- **URL**: `https://edumesones.github.io/complu_logging/`
+- **Gratis** y automático
+- **Accesible desde cualquier dispositivo** con internet
 
-### Opción 2: GitHub Pages (Recomendado para uso permanente)
-1. **Crea un repositorio** en GitHub llamado `complu-logging`
-2. **Sube los archivos** al repositorio
-3. **Activa GitHub Pages** en Settings → Pages
-4. **Accede desde tu tablet** a `https://TU_USUARIO.github.io/complu-logging`
-
-### Opción 3: Netlify (Alternativa gratuita)
-1. Ve a [netlify.com](https://netlify.com)
-2. Arrastra la carpeta del proyecto a la zona de deploy
-3. Obtén una URL pública para acceder desde tu tablet
-
-## 🎮 Cómo usar la aplicación
-
-### 1. Pantalla Principal
-- Verás la fecha actual
-- Dos botones grandes: "PC A FAVOR" y "PC EN CONTRA"
-- Botón "Enviar Reporte por Email" al final
-
-### 2. Registrando Estadísticas
-- **Navega** a la sección deseada
-- **Toca los botones + y -** para incrementar/decrementar contadores
-- **Los datos se guardan automáticamente** en tu tablet
-- **Usa el botón "Volver"** para regresar al inicio
-
-### 3. Enviando Reporte
-- **En la pantalla principal**, toca "Enviar Reporte por Email"
-- **Se generará un email HTML** con todas las estadísticas
-- **Se enviará automáticamente** a la dirección configurada
-
-## 🔧 Personalización
-
-### Agregar/Quitar Jugadores
-Edita el array `jugadores` en `script.js`:
-
-```javascript
-const jugadores = [
-    'Nuevo Jugador',
-    'Otro Jugador',
-    // ... resto de jugadores
-];
+### Servidor Local (Desarrollo)
+```bash
+python -m http.server 8000
+# Luego abrir http://localhost:8000
 ```
 
-### Agregar Nuevas Estadísticas
-1. **Agrega la columna** en el HTML correspondiente
-2. **Actualiza el array de columnas** en JavaScript
-3. **Modifica la función de email** para incluir la nueva estadística
+## 📧 Emails Destino
+
+Los reportes se envían a:
+- `e.gzlzmesones@gmail.com`
+- `cristian26gonzalez@gmail.com`
 
 ## 🐛 Solución de Problemas
 
-### Los contadores no funcionan
-- Verifica que JavaScript esté habilitado en tu navegador
-- Revisa la consola del navegador para errores
+### Email no se envía
+1. Verifica configuración EmailJS en `config.js`
+2. Revisa la consola del navegador
+3. Verifica que EmailJS esté cargado
 
-### El email no se envía
-- Verifica que EmailJS esté configurado correctamente
-- Revisa que las credenciales sean correctas
-- Comprueba que el servicio de email esté activo
+### Datos no se guardan
+1. Verifica que localStorage esté habilitado
+2. Limpia caché del navegador
+3. Usa botón "Limpiar Datos" para reset
 
-### La tabla no se muestra bien en la tablet
-- Asegúrate de que el navegador esté actualizado
-- Prueba con Chrome o Firefox
-- Verifica que la orientación de la pantalla sea horizontal
+### No funciona en tablet
+1. Verifica conexión a internet
+2. Usa Chrome o Firefox
+3. Accede desde la URL de GitHub Pages
 
 ## 📞 Soporte
-Si tienes problemas:
-1. Revisa la consola del navegador (F12)
-2. Verifica que todos los archivos estén en la misma carpeta
-3. Asegúrate de que el servidor web esté funcionando
 
-## 📄 Licencia
-Este proyecto es de uso libre para fines educativos y personales.
+Para problemas técnicos:
+1. Revisa la consola del navegador (F12)
+2. Verifica la configuración de EmailJS
+3. Comprueba que GitHub Pages esté activado
 
 ---
 
-**¡Disfruta registrando las estadísticas de tu equipo! ⚽🏆** 
+**Desarrollado para Complu Logging** ⚽ 
