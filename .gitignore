@@ -3,10 +3,13 @@
 .env.local
 .env.production
 
+# Archivos de configuración de producción (generados por GitHub Actions)
+config.prod.js
+
 # Archivos del sistema
 .DS_Store
 Thumbs.db
-
+# config.local.js ya no se usa
 # Logs
 *.log
 npm-debug.log*

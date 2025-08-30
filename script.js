@@ -266,9 +266,9 @@ async function sendEmail() {
         }
 
         // Verificar si EmailJS está configurado
-        const config = EMAILJS_CONFIG_LOCAL || EMAILJS_CONFIG;
+        const config = EMAILJS_CONFIG;
         if (!config || config.serviceId === 'service_4yx8mii') {
-            alert('⚠️ IMPORTANTE: Necesitas configurar EmailJS primero.\n\n1. Ve a https://www.emailjs.com/\n2. Crea una cuenta gratuita\n3. Configura un servicio de email\n4. Crea una plantilla\n5. Actualiza las credenciales en config.local.js');
+            alert('⚠️ IMPORTANTE: Necesitas configurar EmailJS primero.\n\n1. Ve a https://www.emailjs.com/\n2. Crea una cuenta gratuita\n3. Configura un servicio de email\n4. Crea una plantilla\n5. Actualiza las credenciales en config.js con tus valores reales');
             return;
         }
 

@@ -1,19 +1,19 @@
-// Configuración de EmailJS
-// IMPORTANTE: Las claves sensibles se cargan desde variables de entorno
-// NO subir este archivo con claves reales a GitHub
+// CONFIGURACIÓN DE DESARROLLO LOCAL
+// Este archivo contiene valores de ejemplo para desarrollo
+// En producción, GitHub Actions crea config.prod.js con las credenciales reales
 
 const EMAILJS_CONFIG = {
     // ID del servicio de email (del PASO 2 de configuración)
-    serviceId: process.env.EMAILJS_SERVICE_ID || 'service_4yx8mii',
+    serviceId: 'service_xxxxxxx',  // VALOR DE EJEMPLO - NO FUNCIONARÁ
     
     // ID de la plantilla de email (del PASO 3 de configuración)
-    templateId: process.env.EMAILJS_TEMPLATE_ID || 'template_fchd433',
+    templateId: 'template_xxxxxxx',  // VALOR DE EJEMPLO - NO FUNCIONARÁ
     
     // Tu User ID público de EmailJS (del PASO 4 de configuración)
-    userId: process.env.EMAILJS_USER_ID || 'P44thkxE3SAFdoZUA',
+    userId: 'user_xxxxxxxxxxxxxxx',  // VALOR DE EJEMPLO - NO FUNCIONARÁ
     
     // Email de destino (donde se enviarán los reportes)
-    toEmail: process.env.EMAILJS_TO_EMAIL || 'e.gzlzmesones@gmail.com, cristian26gonzalez@gmail.com'
+    toEmail: 'tu-email@gmail.com, otro-email@gmail.com'  // VALOR DE EJEMPLO - NO FUNCIONARÁ
 };
 
 // Exportar configuración

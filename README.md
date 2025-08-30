@@ -48,29 +48,43 @@ Aplicación web para registrar y enviar estadísticas de partidos de fútbol por
 
 ### ¿Por qué es seguro?
 - **`config.js`**: Contiene valores de ejemplo (NO reales)
-- **`config.local.js`**: Contiene tus credenciales reales (NO se sube a GitHub)
-- **`.gitignore`**: Protege archivos sensibles automáticamente
-- **Tu repositorio puede ser público** sin exponer claves
+- **GitHub Secrets**: Almacena credenciales reales de forma segura
+- **GitHub Actions**: Construye la aplicación con credenciales seguras
+- **Tu repositorio puede ser público** sin exponer credenciales
 
-### Archivos protegidos:
-- ✅ `config.js` → Se sube a GitHub (valores de ejemplo)
-- ❌ `config.local.js` → NO se sube a GitHub (tus claves reales)
+### Archivos de configuración:
+- ✅ `config.js` → Se sube a GitHub (valores de ejemplo para desarrollo)
+- ✅ **GitHub Secrets** → Almacena credenciales reales de forma segura
+- ❌ `config.prod.js` → NO se sube a GitHub (generado automáticamente)
 - ❌ `.env` → NO se sube a GitHub (variables de entorno)
 
 ## 📧 Configuración de EmailJS
 
-### Archivo `config.local.js` (NO subir a GitHub)
+### PASO 1: Configurar GitHub Secrets
+
+Ve a tu repositorio en GitHub → **Settings** → **Secrets and variables** → **Actions**
+
+Crea estos 4 secrets:
+
+| Secret Name | Valor |
+|-------------|-------|
+| `EMAILJS_SERVICE_ID` | `service_xxxxxxx` (tu Service ID real) |
+| `EMAILJS_TEMPLATE_ID` | `template_xxxxxxx` (tu Template ID real) |
+| `EMAILJS_USER_ID` | `user_xxxxxxxxxxxxxxx` (tu User ID real) |
+| `EMAILJS_TO_EMAIL` | `tu-email@gmail.com, otro-email@gmail.com` (tus emails reales) |
+
+### PASO 2: Archivo `config.js` (desarrollo local)
 
 ```javascript
-const EMAILJS_CONFIG_LOCAL = {
-    serviceId: 'TU_SERVICE_ID',        // Del paso 2
-    templateId: 'TU_TEMPLATE_ID',      // Del paso 3  
-    userId: 'TU_USER_ID',              // Del paso 4
-    toEmail: 'email1@gmail.com, email2@gmail.com'  // Múltiples emails separados por coma
+const EMAILJS_CONFIG = {
+    serviceId: 'service_xxxxxxx',        // VALOR DE EJEMPLO
+    templateId: 'template_xxxxxxx',      // VALOR DE EJEMPLO
+    userId: 'user_xxxxxxxxxxxxxxx',      // VALOR DE EJEMPLO
+    toEmail: 'tu-email@gmail.com, otro-email@gmail.com'  // VALOR DE EJEMPLO
 };
 ```
 
-**⚠️ IMPORTANTE**: Este archivo NO se sube a GitHub para proteger tus claves.
+**✅ SEGURO**: Este archivo contiene valores de ejemplo para desarrollo local.
 
 ### Plantilla EmailJS
 
@@ -150,10 +164,34 @@ complu_logging/
 
 ## 🚀 Despliegue
 
-### GitHub Pages (Recomendado)
+### GitHub Pages con GitHub Actions (Recomendado)
 - **URL**: `https://edumesones.github.io/complu_logging/`
 - **Gratis** y automático
+- **Credenciales seguras** usando GitHub Secrets
 - **Accesible desde cualquier dispositivo** con internet
+
+### PASO 1: Subir código a GitHub
+
+```bash
+git add .
+git commit -m "Initial commit with GitHub Actions"
+git push origin main
+```
+
+### PASO 2: Configurar GitHub Secrets
+
+1. Ve a tu repositorio en GitHub
+2. **Settings** → **Secrets and variables** → **Actions**
+3. Crea los 4 secrets de EmailJS (ver sección de configuración arriba)
+
+### PASO 3: Activar GitHub Pages
+
+1. Ve a tu repositorio en GitHub
+2. **Settings** → **Pages**
+3. **Source**: Selecciona **GitHub Actions**
+4. **Save**
+
+**✅ IMPORTANTE**: GitHub Actions se ejecutará automáticamente y desplegará tu aplicación con las credenciales seguras.
 
 ### Servidor Local (Desarrollo)
 ```bash
