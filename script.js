@@ -266,16 +266,17 @@ async function sendEmail() {
         }
 
         // Verificar si EmailJS está configurado
-        if (!EMAILJS_CONFIG || EMAILJS_CONFIG.serviceId === 'YOUR_SERVICE_ID') {
-            alert('⚠️ IMPORTANTE: Necesitas configurar EmailJS primero.\n\n1. Ve a https://www.emailjs.com/\n2. Crea una cuenta gratuita\n3. Configura un servicio de email\n4. Crea una plantilla\n5. Actualiza las credenciales en config.js');
+        const config = EMAILJS_CONFIG_LOCAL || EMAILJS_CONFIG;
+        if (!config || config.serviceId === 'service_4yx8mii') {
+            alert('⚠️ IMPORTANTE: Necesitas configurar EmailJS primero.\n\n1. Ve a https://www.emailjs.com/\n2. Crea una cuenta gratuita\n3. Configura un servicio de email\n4. Crea una plantilla\n5. Actualiza las credenciales en config.local.js');
             return;
         }
 
         // Mostrar información de debug
-        console.log('🔍 Configuración EmailJS:', EMAILJS_CONFIG);
+        console.log('🔍 Configuración EmailJS:', config);
         
         // Inicializar EmailJS
-        emailjs.init(EMAILJS_CONFIG.userId);
+        emailjs.init(config.userId);
         console.log('✅ EmailJS inicializado');
         
         // Recopilar datos
@@ -295,8 +296,8 @@ async function sendEmail() {
         console.log('🔍 HTML Resumen:', resumenHTML);
         
         const response = await emailjs.send(
-            EMAILJS_CONFIG.serviceId,
-            EMAILJS_CONFIG.templateId,
+            config.serviceId,
+            config.templateId,
             {
                 fecha: datos.fecha,
                 tabla_favor: tablaFavorHTML,

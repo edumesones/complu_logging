@@ -21,13 +21,13 @@ Aplicación web para registrar y enviar estadísticas de partidos de fútbol por
 
 ## 🛠️ Instalación y Configuración
 
-### 1. Configurar EmailJS
+### 1. Configurar EmailJS (SEGURO para repositorios públicos)
 
 1. Ve a [https://www.emailjs.com/](https://www.emailjs.com/)
 2. Crea una cuenta gratuita
 3. Configura un servicio de email (Gmail, Outlook, etc.)
 4. Crea una plantilla de email
-5. Actualiza `config.js` con tus credenciales
+5. **IMPORTANTE**: Crea el archivo `config.local.js` con tus credenciales reales
 
 ### 2. Configurar GitHub Pages
 
@@ -44,18 +44,33 @@ Aplicación web para registrar y enviar estadísticas de partidos de fútbol por
 - **Acceso directo**: Crea un bookmark en tu tablet
 - **Funciona offline**: Los datos se guardan localmente
 
+## 🔒 Seguridad para Repositorios Públicos
+
+### ¿Por qué es seguro?
+- **`config.js`**: Contiene valores de ejemplo (NO reales)
+- **`config.local.js`**: Contiene tus credenciales reales (NO se sube a GitHub)
+- **`.gitignore`**: Protege archivos sensibles automáticamente
+- **Tu repositorio puede ser público** sin exponer claves
+
+### Archivos protegidos:
+- ✅ `config.js` → Se sube a GitHub (valores de ejemplo)
+- ❌ `config.local.js` → NO se sube a GitHub (tus claves reales)
+- ❌ `.env` → NO se sube a GitHub (variables de entorno)
+
 ## 📧 Configuración de EmailJS
 
-### Archivo `config.js`
+### Archivo `config.local.js` (NO subir a GitHub)
 
 ```javascript
-const EMAILJS_CONFIG = {
+const EMAILJS_CONFIG_LOCAL = {
     serviceId: 'TU_SERVICE_ID',        // Del paso 2
     templateId: 'TU_TEMPLATE_ID',      // Del paso 3  
     userId: 'TU_USER_ID',              // Del paso 4
     toEmail: 'email1@gmail.com, email2@gmail.com'  // Múltiples emails separados por coma
 };
 ```
+
+**⚠️ IMPORTANTE**: Este archivo NO se sube a GitHub para proteger tus claves.
 
 ### Plantilla EmailJS
 
