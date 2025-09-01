@@ -7,7 +7,17 @@ const jugadores = [
 
 // Verificar si Firebase está disponible
 function isFirebaseAvailable() {
-    return typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length > 0;
+    const disponible = typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length > 0;
+    console.log('🔍 Firebase disponible:', disponible);
+    if (disponible) {
+        console.log('✅ Firebase apps:', firebase.apps);
+        console.log('✅ Firebase firestore:', typeof firebase.firestore);
+    } else {
+        console.log('❌ Firebase no disponible');
+        console.log('❌ typeof firebase:', typeof firebase);
+        console.log('❌ firebase.apps:', firebase?.apps);
+    }
+    return disponible;
 }
 
 // Mostrar indicador de sincronización
@@ -38,6 +48,25 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('✅ EMAILJS_CONFIG cargado:', EMAILJS_CONFIG);
     } else {
         console.error('❌ EMAILJS_CONFIG no está definido');
+    }
+    
+    // Verificar Firebase
+    console.log('🔍 Verificando Firebase...');
+    if (typeof firebase !== 'undefined') {
+        console.log('✅ Firebase SDK cargado');
+        console.log('✅ Firebase apps:', firebase.apps);
+        if (typeof syncFavorData === 'function') {
+            console.log('✅ Función syncFavorData disponible');
+        } else {
+            console.error('❌ Función syncFavorData NO disponible');
+        }
+        if (typeof syncContraData === 'function') {
+            console.log('✅ Función syncContraData disponible');
+        } else {
+            console.error('❌ Función syncContraData NO disponible');
+        }
+    } else {
+        console.error('❌ Firebase SDK NO cargado');
     }
     
     // Verificar si es un nuevo día y limpiar datos si es necesario
@@ -251,29 +280,41 @@ function inicializarTablaContra() {
 
 // Cambiar contador
 async function cambiarContador(jugador, columna, cambio, tipo) {
+    console.log(`🔄 cambiarContador llamado: ${jugador}, ${columna}, ${cambio}, ${tipo}`);
+    
     const valorActual = obtenerValor(jugador, columna, tipo);
     const nuevoValor = Math.max(0, valorActual + cambio);
+    
+    console.log(`📊 Valores: actual=${valorActual}, cambio=${cambio}, nuevo=${nuevoValor}`);
     
     // Guardar en localStorage (para respaldo local)
     const clave = `${tipo}_${jugador}_${columna}`;
     localStorage.setItem(clave, nuevoValor.toString());
+    console.log(`💾 Guardado en localStorage: ${clave} = ${nuevoValor}`);
     
     // ✅ ACTUALIZAR UI INMEDIATAMENTE
     const elemento = document.getElementById(`${tipo}_${jugador}_${columna}`);
     if (elemento) {
         elemento.textContent = nuevoValor;
+        console.log(`🎨 UI actualizada: ${elemento.id} = ${nuevoValor}`);
+    } else {
+        console.log(`⚠️ Elemento no encontrado: ${tipo}_${jugador}_${columna}`);
     }
     
     // 🔄 Firebase en segundo plano (no bloquea la UI)
+    console.log('🔍 Verificando Firebase...');
     if (isFirebaseAvailable()) {
+        console.log('✅ Firebase disponible, iniciando sincronización...');
         // Usar setTimeout para no bloquear la UI
         setTimeout(async () => {
             try {
+                console.log(`🚀 Iniciando sync para ${tipo}: ${jugador} - ${columna} = ${nuevoValor}`);
                 if (tipo === 'favor') {
                     await syncFavorData(jugador, columna, nuevoValor);
                 } else if (tipo === 'contra') {
                     await syncContraData(jugador, columna, nuevoValor);
                 }
+                console.log('✅ Sincronización completada');
             } catch (error) {
                 console.error('❌ Error sincronizando con Firebase:', error);
                 // Continuar sin Firebase - los datos están en localStorage
