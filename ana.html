@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complu Logging - Ana</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Ana - Gestión de Jugadores</h1>
+            <p class="date-display" id="currentDateAna"></p>
+        </header>
+        
+        <main class="ana-form">
+            <div class="form-group">
+                <label for="jugadorSelect">Jugador:</label>
+                <select id="jugadorSelect" class="form-control">
+                    <option value="">Selecciona un jugador</option>
+                    <option value="Fer">1. Fer</option>
+                    <option value="Antuene">2. Antuene</option>
+                    <option value="Juan Muñoz">3. Juan Muñoz</option>
+                    <option value="Iván">4. Iván</option>
+                    <option value="David">5. David</option>
+                    <option value="Manu">6. Manu</option>
+                    <option value="Fresnillo">7. Fresnillo</option>
+                    <option value="Ricardo">8. Ricardo</option>
+                    <option value="Jorge Fernández">9. Jorge Fernández</option>
+                    <option value="Javi f">10. Javi f</option>
+                    <option value="Mont">11. Mont</option>
+                    <option value="Bou">12. Bou</option>
+                    <option value="Lucas Pinto">13. Lucas Pinto</option>
+                    <option value="José San Millán">14. José San Millán</option>
+                    <option value="Edu">15. Edu</option>
+                    <option value="Nico Gonzalo">16. Nico Gonzalo</option>
+                    <option value="Aarón">17. Aarón</option>
+                    <option value="Juan García">18. Juan García</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="disponibleSelect">Disponible:</label>
+                <select id="disponibleSelect" class="form-control">
+                    <option value="">Selecciona disponibilidad</option>
+                    <option value="SI">SI</option>
+                    <option value="NO">NO</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="textoInput">Texto:</label>
+                <textarea id="textoInput" class="form-control" rows="4" placeholder="Escribe aquí..."></textarea>
+            </div>
+            
+            <div class="form-actions">
+                <button class="save-button" onclick="guardarDatosAna()">
+                    💾 Guardar Datos
+                </button>
+            </div>
+        </main>
+        
+        <footer>
+            <button class="nav-button" onclick="window.location.href='index.html'">
+                🏠 Volver al Inicio
+            </button>
+        </footer>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html> 

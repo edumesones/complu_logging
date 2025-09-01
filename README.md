@@ -162,36 +162,60 @@ complu_logging/
 └── README.md           # Este archivo
 ```
 
-## 🚀 Despliegue
+## 🚀 DESPLIEGUE EN NETLIFY (RECOMENDADO)
 
-### GitHub Pages con GitHub Actions (Recomendado)
-- **URL**: `https://edumesones.github.io/complu_logging/`
-- **Gratis** y automático
-- **Credenciales seguras** usando GitHub Secrets
-- **Accesible desde cualquier dispositivo** con internet
+### ✅ VENTAJAS DE NETLIFY:
 
-### PASO 1: Subir código a GitHub
+- **Más rápido** que GitHub Pages
+- **Sin problemas** de credenciales
+- **HTTPS automático** incluido
+- **CDN global** para mejor rendimiento
+- **Dominio personalizado** opcional
 
-```bash
-git add .
-git commit -m "Initial commit with GitHub Actions"
-git push origin main
-```
+### PASO 1: Preparar archivos
 
-### PASO 2: Configurar GitHub Secrets
+1. **Eliminar archivos innecesarios**:
+   ```bash
+   rm -rf .github/
+   rm config.js
+   rm package.json
+   ```
 
-1. Ve a tu repositorio en GitHub
-2. **Settings** → **Secrets and variables** → **Actions**
-3. Crea los 4 secrets de EmailJS (ver sección de configuración arriba)
+2. **Mantener solo**:
+   - `index.html`
+   - `pc-favor.html`
+   - `pc-contra.html`
+   - `styles.css`
+   - `script.js`
+   - `netlify.toml`
 
-### PASO 3: Activar GitHub Pages
+### PASO 2: Desplegar en Netlify
 
-1. Ve a tu repositorio en GitHub
-2. **Settings** → **Pages**
-3. **Source**: Selecciona **GitHub Actions**
-4. **Save**
+#### **OPCIÓN A: Arrastrar y Soltar (Más Fácil)**
 
-**✅ IMPORTANTE**: GitHub Actions se ejecutará automáticamente y desplegará tu aplicación con las credenciales seguras.
+1. Ve a [netlify.com](https://netlify.com)
+2. **Sign up** con tu cuenta de GitHub
+3. **Drag & Drop** tu carpeta del proyecto
+4. **¡Listo!** Tu app estará online
+
+#### **OPCIÓN B: Desde GitHub (Más Profesional)**
+
+1. **Sube tu código** a GitHub
+2. En Netlify: **New site from Git**
+3. Selecciona tu repositorio
+4. **Deploy** automático
+
+### PASO 3: Configurar dominio
+
+- **URL automática**: `https://random-name.netlify.app`
+- **HTTPS**: Automático y gratuito
+
+### PASO 4: Probar la aplicación
+
+1. **Accede** a tu URL de Netlify
+2. **Prueba** las funcionalidades
+3. **Envía email** (se pedirán credenciales)
+4. **Verifica** que funcione en tu tablet
 
 ### Servidor Local (Desarrollo)
 ```bash
@@ -231,4 +255,6 @@ Para problemas técnicos:
 
 ---
 
-**Desarrollado para Complu Logging** ⚽ 
+**Desarrollado para Complu Logging** ⚽ / /   A c t i v a c i � n   d e   G i t H u b   A c t i o n s 
+ 
+ 

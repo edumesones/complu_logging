@@ -34,6 +34,9 @@ document.addEventListener('DOMContentLoaded', function() {
     } else if (currentPage === 'pc-contra.html') {
         inicializarTablaContra();
         mostrarFechaEnPagina('currentDateContra');
+    } else if (currentPage === 'ana.html') {
+        mostrarFechaEnPagina('currentDateAna');
+        cargarDatosAna();
     } else if (currentPage === 'index.html' || currentPage === '') {
         // Página principal
         cargarDatosGuardados();
@@ -103,6 +106,9 @@ function verificarNuevoDia() {
         clavesParaLimpiar.forEach(clave => {
             localStorage.removeItem(clave);
         });
+        
+        // Limpiar datos de Ana
+        localStorage.removeItem('datos_ana');
         
         console.log('🧹 Datos limpiados para el nuevo día');
         
@@ -265,12 +271,19 @@ async function sendEmail() {
             return;
         }
 
-        // Verificar si EmailJS está configurado
-        const config = EMAILJS_CONFIG;
-        if (!config || config.serviceId === 'service_4yx8mii') {
-            alert('⚠️ IMPORTANTE: Necesitas configurar EmailJS primero.\n\n1. Ve a https://www.emailjs.com/\n2. Crea una cuenta gratuita\n3. Configura un servicio de email\n4. Crea una plantilla\n5. Actualiza las credenciales en config.js con tus valores reales');
-            return;
-        }
+        // Sistema de autenticación solo con User ID (más seguro)
+        const userId = prompt('👤 Introduce tu EmailJS User ID (obligatorio):');
+        if (!userId) return;
+        
+        // Usar credenciales predefinidas (Service ID y Template ID son públicos)
+        const config = {
+            serviceId: 'service_4yx8mii',
+            templateId: 'template_fchd433',
+            userId: userId,  // Solo esto se pide al usuario
+            toEmail: 'e.gzlzmesones@gmail.com, cristian26gonzalez@gmail.com'
+        };
+        
+        console.log('✅ Configuración creada - User ID verificado');
 
         // Mostrar información de debug
         console.log('🔍 Configuración EmailJS:', config);
@@ -290,10 +303,12 @@ async function sendEmail() {
         const tablaFavorHTML = crearTablaFavorHTML(datos);
         const tablaContraHTML = crearTablaContraHTML(datos);
         const resumenHTML = crearResumenHTML(datos);
+        const seccionAnaHTML = crearSeccionAnaHTML();
         
         console.log('🔍 HTML PC A FAVOR:', tablaFavorHTML);
         console.log('🔍 HTML PC EN CONTRA:', tablaContraHTML);
         console.log('🔍 HTML Resumen:', resumenHTML);
+        console.log('🔍 HTML Ana:', seccionAnaHTML);
         
         const response = await emailjs.send(
             config.serviceId,
@@ -302,7 +317,8 @@ async function sendEmail() {
                 fecha: datos.fecha,
                 tabla_favor: tablaFavorHTML,
                 tabla_contra: tablaContraHTML,
-                resumen: resumenHTML
+                resumen: resumenHTML,
+                seccion_ana: seccionAnaHTML
             }
         );
         
@@ -395,6 +411,9 @@ function limpiarDatosManual() {
         
         // Limpiar también la fecha para forzar reinicio
         localStorage.removeItem('ultima_fecha');
+        
+        // Limpiar datos de Ana
+        localStorage.removeItem('datos_ana');
         
         alert('✅ Todos los datos han sido limpiados. La página se recargará.');
         location.reload();
@@ -569,6 +588,98 @@ function crearResumenHTML(datos) {
         html += '<tr>';
         html += '<td style="font-weight:bold;">' + nombre + '</td>';
         html += '<td>' + valor + '</td>';
+        html += '</tr>';
+    });
+    
+    html += '</tbody></table>';
+    return html;
+} 
+
+// ===== FUNCIONES PARA LA INTERFAZ ANA =====
+
+// Guardar datos de Ana
+function guardarDatosAna() {
+    const jugador = document.getElementById('jugadorSelect').value;
+    const disponible = document.getElementById('disponibleSelect').value;
+    const texto = document.getElementById('textoInput').value;
+    
+    // Validar que se haya seleccionado un jugador
+    if (!jugador) {
+        alert('❌ Por favor, selecciona un jugador');
+        return;
+    }
+    
+    // Validar que se haya seleccionado disponibilidad
+    if (!disponible) {
+        alert('❌ Por favor, selecciona si está disponible o no');
+        return;
+    }
+    
+    // Guardar datos en localStorage
+    const datosAna = {
+        jugador: jugador,
+        disponible: disponible,
+        texto: texto,
+        fecha: new Date().toISOString()
+    };
+    
+    // Obtener datos existentes o crear array vacío
+    const datosExistentes = JSON.parse(localStorage.getItem('datos_ana') || '[]');
+    
+    // Buscar si ya existe un registro para este jugador
+    const indexExistente = datosExistentes.findIndex(d => d.jugador === jugador);
+    
+    if (indexExistente !== -1) {
+        // Actualizar registro existente
+        datosExistentes[indexExistente] = datosAna;
+    } else {
+        // Añadir nuevo registro
+        datosExistentes.push(datosAna);
+    }
+    
+    // Guardar en localStorage
+    localStorage.setItem('datos_ana', JSON.stringify(datosExistentes));
+    
+    // Limpiar formulario
+    document.getElementById('jugadorSelect').value = '';
+    document.getElementById('disponibleSelect').value = '';
+    document.getElementById('textoInput').value = '';
+    
+    alert('✅ Datos guardados correctamente');
+}
+
+// Cargar datos de Ana (para mostrar en el formulario si es necesario)
+function cargarDatosAna() {
+    // Por ahora solo cargamos la fecha
+    // Los datos se cargan automáticamente desde localStorage
+    console.log('📋 Interfaz Ana cargada');
+}
+
+// Obtener datos de Ana para el email
+function obtenerDatosAna() {
+    return JSON.parse(localStorage.getItem('datos_ana') || '[]');
+}
+
+// Crear HTML para la sección Ana en el email
+function crearSeccionAnaHTML() {
+    const datosAna = obtenerDatosAna();
+    
+    if (datosAna.length === 0) {
+        return '<p style="color: #666; font-style: italic;">No hay datos registrados en Ana.</p>';
+    }
+    
+    let html = '<table border="1" cellpadding="5" cellspacing="0" style="width:100%; border-collapse:collapse;">';
+    html += '<thead><tr style="background-color:#f8f9fa;">';
+    html += '<th>Jugador</th>';
+    html += '<th>Disponible</th>';
+    html += '<th>Texto</th>';
+    html += '</tr></thead><tbody>';
+    
+    datosAna.forEach(dato => {
+        html += '<tr>';
+        html += '<td style="font-weight:bold;">' + dato.jugador + '</td>';
+        html += '<td>' + dato.disponible + '</td>';
+        html += '<td>' + (dato.texto || '-') + '</td>';
         html += '</tr>';
     });
     
