@@ -5,19 +5,30 @@ const jugadores = [
     'Edu', 'Nico Gonzalo', 'Aarón', 'Juan García'
 ];
 
-// Verificar si Firebase está disponible
-function isFirebaseAvailable() {
-    const disponible = typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length > 0;
-    console.log('🔍 Firebase disponible:', disponible);
-    if (disponible) {
-        console.log('✅ Firebase apps:', firebase.apps);
-        console.log('✅ Firebase firestore:', typeof firebase.firestore);
-    } else {
-        console.log('❌ Firebase no disponible');
-        console.log('❌ typeof firebase:', typeof firebase);
-        console.log('❌ firebase.apps:', firebase?.apps);
+// Columnas para PC A FAVOR
+const columnas = ['SACA_BIEN', 'SACA_MAL', 'PARA_BIEN', 'PARA_MAL', 'GOL', 'TIRO_PORTERIA', 'TIRO_FUERA'];
+
+// Columnas para PC EN CONTRA
+const columnasContra = ['PENALTY', 'PENALTY_TONTO'];
+
+// Verificar si Supabase está disponible
+function isSupabaseAvailable() {
+    try {
+        const disponible = typeof supabase !== 'undefined' && supabase !== null;
+        console.log('🔍 Supabase disponible:', disponible);
+        if (disponible) {
+            console.log('✅ Supabase inicializado');
+            console.log('✅ Supabase URL:', supabase.supabaseUrl);
+        } else {
+            console.log('❌ Supabase no disponible');
+            console.log('❌ typeof supabase:', typeof supabase);
+            console.log('❌ supabase value:', supabase);
+        }
+        return disponible;
+    } catch (error) {
+        console.log('❌ Error verificando Supabase:', error);
+        return false;
     }
-    return disponible;
 }
 
 // Mostrar indicador de sincronización
@@ -50,27 +61,54 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('❌ EMAILJS_CONFIG no está definido');
     }
     
-    // Verificar Firebase
-    console.log('🔍 Verificando Firebase...');
-    if (typeof firebase !== 'undefined') {
-        console.log('✅ Firebase SDK cargado');
-        console.log('✅ Firebase apps:', firebase.apps);
-        if (typeof syncFavorData === 'function') {
-            console.log('✅ Función syncFavorData disponible');
-        } else {
-            console.error('❌ Función syncFavorData NO disponible');
+    // Esperar un poco para que Supabase se cargue completamente
+    setTimeout(() => {
+        // Verificar Supabase
+        console.log('🔍 Verificando Supabase...');
+        try {
+            console.log('🔍 typeof supabase:', typeof supabase);
+            console.log('🔍 supabase object:', supabase);
+            
+            if (typeof supabase !== 'undefined' && supabase) {
+                console.log('✅ Supabase SDK cargado');
+                console.log('✅ Supabase URL:', supabase.supabaseUrl);
+                if (typeof syncFavorData === 'function') {
+                    console.log('✅ Función syncFavorData disponible');
+                } else {
+                    console.error('❌ Función syncFavorData NO disponible');
+                }
+                if (typeof syncContraData === 'function') {
+                    console.log('✅ Función syncContraData disponible');
+                } else {
+                    console.error('❌ Función syncContraData NO disponible');
+                }
+            } else {
+                console.error('❌ Supabase SDK NO cargado');
+                console.log('⚠️ La app funcionará solo con localStorage');
+                
+                // Verificar si los scripts se cargaron
+                const scripts = document.querySelectorAll('script[src*="supabase"]');
+                console.log('📜 Scripts de Supabase encontrados:', scripts.length);
+                scripts.forEach((script, index) => {
+                    console.log(`📜 Script ${index + 1}:`, script.src);
+                });
+            }
+        } catch (error) {
+            console.error('❌ Error verificando Supabase:', error);
+            console.log('⚠️ La app funcionará solo con localStorage');
         }
-        if (typeof syncContraData === 'function') {
-            console.log('✅ Función syncContraData disponible');
-        } else {
-            console.error('❌ Función syncContraData NO disponible');
-        }
-    } else {
-        console.error('❌ Firebase SDK NO cargado');
-    }
+    }, 1000); // Esperar 1 segundo
     
-    // Verificar si es un nuevo día y limpiar datos si es necesario
+    // Verificar si es un nuevo día
     verificarNuevoDia();
+    
+    // Cargar datos guardados
+    cargarDatosGuardados();
+    
+    // Cargar datos desde Supabase (sincronización)
+    setTimeout(() => {
+        cargarDatosDesdeSupabase();
+    }, 2000); // Esperar 2 segundos para que Supabase se inicialice
     
     // Mostrar fecha actual
     mostrarFecha();
@@ -93,6 +131,39 @@ document.addEventListener('DOMContentLoaded', function() {
     } else if (currentPage === 'index.html' || currentPage === '') {
         // Página principal
         cargarDatosGuardados();
+    }
+    
+    // Función para cargar datos desde Supabase (nueva versión)
+    async function cargarDatosDesdeSupabase() {
+        await cargarTodosLosDatosDesdeSupabase();
+    }
+    
+    // Función para actualizar la tabla PC A FAVOR
+    function actualizarTablaFavor() {
+        jugadores.forEach(jugador => {
+            columnas.forEach(columna => {
+                const cacheKey = `favor_${jugador}_${columna}`;
+                const valor = valoresCache[cacheKey] || 0;
+                const elemento = document.getElementById(`favor_${jugador}_${columna}`);
+                if (elemento) {
+                    elemento.textContent = valor;
+                }
+            });
+        });
+    }
+    
+    // Función para actualizar la tabla PC EN CONTRA
+    function actualizarTablaContra() {
+        jugadores.forEach(jugador => {
+            columnasContra.forEach(columna => {
+                const cacheKey = `contra_${jugador}_${columna}`;
+                const valor = valoresCache[cacheKey] || 0;
+                const elemento = document.getElementById(`contra_${jugador}_${columna}`);
+                if (elemento) {
+                    elemento.textContent = valor;
+                }
+            });
+        });
     }
     
     console.log('✅ Inicialización completada');
@@ -282,15 +353,21 @@ function inicializarTablaContra() {
 async function cambiarContador(jugador, columna, cambio, tipo) {
     console.log(`🔄 cambiarContador llamado: ${jugador}, ${columna}, ${cambio}, ${tipo}`);
     
-    const valorActual = obtenerValor(jugador, columna, tipo);
+    // Obtener valor actual desde cache/Supabase
+    const cacheKey = `${tipo}_${jugador}_${columna}`;
+    let valorActual = valoresCache[cacheKey] || 0;
+    
+    // Si no está en cache, obtener desde Supabase
+    if (valoresCache[cacheKey] === undefined) {
+        valorActual = await obtenerValorSupabase(jugador, columna, tipo);
+    }
+    
     const nuevoValor = Math.max(0, valorActual + cambio);
     
     console.log(`📊 Valores: actual=${valorActual}, cambio=${cambio}, nuevo=${nuevoValor}`);
     
-    // Guardar en localStorage (para respaldo local)
-    const clave = `${tipo}_${jugador}_${columna}`;
-    localStorage.setItem(clave, nuevoValor.toString());
-    console.log(`💾 Guardado en localStorage: ${clave} = ${nuevoValor}`);
+    // Actualizar cache inmediatamente
+    valoresCache[cacheKey] = nuevoValor;
     
     // ✅ ACTUALIZAR UI INMEDIATAMENTE
     const elemento = document.getElementById(`${tipo}_${jugador}_${columna}`);
@@ -301,34 +378,140 @@ async function cambiarContador(jugador, columna, cambio, tipo) {
         console.log(`⚠️ Elemento no encontrado: ${tipo}_${jugador}_${columna}`);
     }
     
-    // 🔄 Firebase en segundo plano (no bloquea la UI)
-    console.log('🔍 Verificando Firebase...');
-    if (isFirebaseAvailable()) {
-        console.log('✅ Firebase disponible, iniciando sincronización...');
+    // 🔄 Supabase en segundo plano (no bloquea la UI)
+    console.log('🔍 Verificando Supabase...');
+    if (isSupabaseAvailable()) {
+        console.log('✅ Supabase disponible, iniciando sincronización...');
         // Usar setTimeout para no bloquear la UI
         setTimeout(async () => {
             try {
-                console.log(`🚀 Iniciando sync para ${tipo}: ${jugador} - ${columna} = ${nuevoValor}`);
+                console.log(`🚀 Iniciando sync para ${tipo}: ${jugador} - ${columna} incremento=${cambio}`);
                 if (tipo === 'favor') {
-                    await syncFavorData(jugador, columna, nuevoValor);
+                    await syncFavorData(jugador, columna, cambio);
                 } else if (tipo === 'contra') {
-                    await syncContraData(jugador, columna, nuevoValor);
+                    await syncContraData(jugador, columna, cambio);
                 }
                 console.log('✅ Sincronización completada');
             } catch (error) {
-                console.error('❌ Error sincronizando con Firebase:', error);
-                // Continuar sin Firebase - los datos están en localStorage
+                console.error('❌ Error sincronizando con Supabase:', error);
+                // Continuar sin Supabase - los datos están en localStorage
             }
         }, 0);
     } else {
-        console.log('⚠️ Firebase no disponible, usando solo localStorage');
+        console.log('⚠️ Supabase no disponible, usando solo localStorage');
     }
 }
 
-// Obtener valor del contador
+// Cache de valores para evitar múltiples consultas
+const valoresCache = {};
+
+// Obtener valor del contador desde Supabase (con fallback a 0)
+async function obtenerValorSupabase(jugador, columna, tipo) {
+    if (!isSupabaseAvailable()) {
+        console.log('⚠️ Supabase no disponible, retornando 0');
+        return 0;
+    }
+    
+    try {
+        const diaId = await getOrCreateDay();
+        if (!diaId) return 0;
+        
+        const tabla = tipo === 'favor' ? 'pc_favor' : 'pc_contra';
+        const { data, error } = await supabase
+            .from(tabla)
+            .select('valor')
+            .eq('dia_id', diaId)
+            .eq('jugador', jugador)
+            .eq('estadistica', columna)
+            .single();
+        
+        if (error) {
+            console.log(`📊 No existe registro para ${jugador}-${columna}, retornando 0`);
+            return 0;
+        }
+        
+        return data ? data.valor : 0;
+    } catch (error) {
+        console.error('❌ Error obteniendo valor desde Supabase:', error);
+        return 0;
+    }
+}
+
+// Obtener valor del contador (sincróno para compatibilidad)
 function obtenerValor(jugador, columna, tipo) {
-    const clave = `${tipo}_${jugador}_${columna}`;
-    return parseInt(localStorage.getItem(clave) || '0');
+    const cacheKey = `${tipo}_${jugador}_${columna}`;
+    
+    // Devolver desde cache si está disponible
+    if (valoresCache[cacheKey] !== undefined) {
+        return valoresCache[cacheKey];
+    }
+    
+    // Si no está en cache, devolver 0 y cargar asincrónamente
+    obtenerValorSupabase(jugador, columna, tipo).then(valor => {
+        valoresCache[cacheKey] = valor;
+        // Actualizar UI si el elemento existe
+        actualizarElementoUI(jugador, columna, tipo, valor);
+    });
+    
+    return 0;
+}
+
+// Actualizar elemento UI específico
+function actualizarElementoUI(jugador, columna, tipo, valor) {
+    const elemento = document.getElementById(`${tipo}_${jugador}_${columna}`);
+    if (elemento && elemento.textContent != valor.toString()) {
+        elemento.textContent = valor;
+        console.log(`🔄 UI actualizada desde Supabase: ${tipo}_${jugador}_${columna} = ${valor}`);
+    }
+}
+
+// Cargar todos los datos desde Supabase al inicializar
+async function cargarTodosLosDatosDesdeSupabase() {
+    if (!isSupabaseAvailable()) {
+        console.log('⚠️ Supabase no disponible, mostrando todos los valores en 0');
+        return;
+    }
+    
+    try {
+        console.log('🔄 Cargando todos los datos desde Supabase...');
+        const diaId = await getOrCreateDay();
+        if (!diaId) return;
+        
+        // Cargar datos PC A FAVOR
+        const { data: favorData } = await supabase
+            .from('pc_favor')
+            .select('jugador, estadistica, valor')
+            .eq('dia_id', diaId);
+        
+        // Cargar datos PC EN CONTRA  
+        const { data: contraData } = await supabase
+            .from('pc_contra')
+            .select('jugador, estadistica, valor')
+            .eq('dia_id', diaId);
+        
+        // Actualizar cache con datos de PC A FAVOR
+        if (favorData) {
+            favorData.forEach(row => {
+                const cacheKey = `favor_${row.jugador}_${row.estadistica}`;
+                valoresCache[cacheKey] = row.valor;
+                actualizarElementoUI(row.jugador, row.estadistica, 'favor', row.valor);
+            });
+        }
+        
+        // Actualizar cache con datos de PC EN CONTRA
+        if (contraData) {
+            contraData.forEach(row => {
+                const cacheKey = `contra_${row.jugador}_${row.estadistica}`;
+                valoresCache[cacheKey] = row.valor;
+                actualizarElementoUI(row.jugador, row.estadistica, 'contra', row.valor);
+            });
+        }
+        
+        console.log(`✅ Datos cargados: ${(favorData?.length || 0) + (contraData?.length || 0)} registros`);
+        
+    } catch (error) {
+        console.error('❌ Error cargando datos desde Supabase:', error);
+    }
 }
 
 // Guardar datos PC A FAVOR
@@ -427,12 +610,12 @@ async function sendEmail() {
 // Recopilar todos los datos
 async function recopilarDatos() {
     try {
-        // Intentar obtener datos desde Firebase (consolidados de todos los dispositivos)
-        const firebaseData = await getAllDataForEmail();
+        // Intentar obtener datos desde Supabase (consolidados de todos los dispositivos)
+        const supabaseData = await getAllDataForEmail();
         
-        if (firebaseData && firebaseData.pcFavor && firebaseData.pcContra) {
-            console.log('✅ Usando datos de Firebase:', firebaseData);
-            // Usar datos de Firebase
+        if (supabaseData && supabaseData.pcFavor && supabaseData.pcContra) {
+            console.log('✅ Usando datos de Supabase:', supabaseData);
+            // Usar datos de Supabase
             return {
                 fecha: new Date().toLocaleDateString('es-ES', {
                     weekday: 'long',
@@ -440,18 +623,18 @@ async function recopilarDatos() {
                     month: 'long',
                     day: 'numeric'
                 }),
-                pcFavor: firebaseData.pcFavor,
-                pcContra: firebaseData.pcContra,
-                ana: firebaseData.ana || [],
-                maxi: firebaseData.maxi || []
+                pcFavor: supabaseData.pcFavor,
+                pcContra: supabaseData.pcContra,
+                ana: supabaseData.ana || [],
+                maxi: supabaseData.maxi || []
             };
         }
     } catch (error) {
-        console.error('❌ Error obteniendo datos de Firebase:', error);
+        console.error('❌ Error obteniendo datos de Supabase:', error);
     }
     
-    // Fallback a datos locales si Firebase falla
-    console.log('🔄 Usando datos locales como fallback');
+    // Fallback: usar datos del cache actual si Supabase falla
+    console.log('🔄 Usando datos del cache como fallback');
     const datos = {
         fecha: new Date().toLocaleDateString('es-ES', {
             weekday: 'long',
@@ -465,21 +648,23 @@ async function recopilarDatos() {
         maxi: []
     };
     
-    // Recopilar datos PC A FAVOR
+    // Recopilar datos PC A FAVOR desde cache
     const columnasFavor = ['SACA_BIEN', 'SACA_MAL', 'PARA_BIEN', 'PARA_MAL', 'GOL', 'TIRO_PORTERIA', 'TIRO_FUERA'];
     jugadores.forEach(jugador => {
         datos.pcFavor[jugador] = {};
         columnasFavor.forEach(columna => {
-            datos.pcFavor[jugador][columna] = obtenerValor(jugador, columna, 'favor');
+            const cacheKey = `favor_${jugador}_${columna}`;
+            datos.pcFavor[jugador][columna] = valoresCache[cacheKey] || 0;
         });
     });
     
-    // Recopilar datos PC EN CONTRA
+    // Recopilar datos PC EN CONTRA desde cache
     const columnasContra = ['PENALTY', 'PENALTY_TONTO'];
     jugadores.forEach(jugador => {
         datos.pcContra[jugador] = {};
         columnasContra.forEach(columna => {
-            datos.pcContra[jugador][columna] = obtenerValor(jugador, columna, 'contra');
+            const cacheKey = `contra_${jugador}_${columna}`;
+            datos.pcContra[jugador][columna] = valoresCache[cacheKey] || 0;
         });
     });
     
@@ -504,7 +689,7 @@ function limpiarDatos() {
 // Función para limpiar datos manualmente
 async function limpiarDatosManual() {
     if (confirm('🗑️ ¿Estás seguro de que quieres limpiar TODOS los datos?\n\nEsto eliminará todas las estadísticas registradas de TODOS los dispositivos.')) {
-        // Limpiar datos de Firebase (todos los dispositivos)
+        // Limpiar datos de Supabase (todos los dispositivos)
         await clearDayData();
         
         // Limpiar solo los datos de estadísticas, no la fecha
@@ -771,15 +956,15 @@ async function guardarDatosAna() {
     // Guardar en localStorage
     localStorage.setItem('datos_ana', JSON.stringify(datosExistentes));
     
-    // Sincronizar con Firebase solo si está disponible
-    if (isFirebaseAvailable()) {
+    // Sincronizar con Supabase solo si está disponible
+    if (isSupabaseAvailable()) {
         try {
             await syncAnaData(jugador, disponible, texto);
         } catch (error) {
-            console.error('❌ Error sincronizando Ana con Firebase:', error);
+            console.error('❌ Error sincronizando Ana con Supabase:', error);
         }
     } else {
-        console.log('⚠️ Firebase no disponible, usando solo localStorage');
+        console.log('⚠️ Supabase no disponible, usando solo localStorage');
     }
     
     // Limpiar formulario
@@ -870,15 +1055,15 @@ async function guardarDatosMaxi() {
     // Guardar en localStorage
     localStorage.setItem('datos_maxi', JSON.stringify(datosExistentes));
     
-    // Sincronizar con Firebase solo si está disponible
-    if (isFirebaseAvailable()) {
+    // Sincronizar con Supabase solo si está disponible
+    if (isSupabaseAvailable()) {
         try {
             await syncMaxiData(jugadoresSeleccionados, tipo, texto);
         } catch (error) {
-            console.error('❌ Error sincronizando MAXI con Firebase:', error);
+            console.error('❌ Error sincronizando MAXI con Supabase:', error);
         }
     } else {
-        console.log('⚠️ Firebase no disponible, usando solo localStorage');
+        console.log('⚠️ Supabase no disponible, usando solo localStorage');
     }
     
     // Limpiar formulario

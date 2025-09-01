@@ -51,12 +51,40 @@
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <!-- Firebase SDK - Versión optimizada -->
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
-    <!-- Configuración Firebase -->
-    <script src="firebase-config.js"></script>
-    <!-- Configuración EmailJS se pide al usuario -->
+    <!-- Supabase SDK - CDN más confiable -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Fallback si el CDN falla -->
+    <script>
+        if (typeof window.supabase === 'undefined') {
+            console.log('⚠️ CDN de Supabase falló, cargando desde unpkg...');
+            const script = document.createElement('script');
+            script.src = 'https://unpkg.com/@supabase/supabase-js@2.38.4/dist/umd/supabase.js';
+            document.head.appendChild(script);
+        }
+    </script>
+    <!-- Configuración Supabase -->
+    <script src="supabase-config.js"></script>
+    <!-- Verificación adicional para Index -->
+    <script>
+        // Verificar que Supabase se haya inicializado correctamente
+        setTimeout(() => {
+            if (typeof supabase === 'undefined' || supabase === null) {
+                console.log('🔄 Reintentando inicialización de Supabase en Index...');
+                if (typeof initializeSupabase === 'function') {
+                    initializeSupabase();
+                }
+            }
+            
+            // Inicializar sincronización en tiempo real
+            if (typeof initRealtimeSync === 'function') {
+                console.log('🔄 Iniciando sincronización en tiempo real...');
+                initRealtimeSync();
+            }
+        }, 500);
+    </script>
+    <!-- Configuración EmailJS temporal -->
+    <script src="config.js"></script>
+    <!-- Script principal -->
     <script src="script.js"></script>
 </body>
 </html> 
