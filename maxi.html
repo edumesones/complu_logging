@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complu Logging - MAXI</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>MAXI - Gestión Avanzada</h1>
+            <p class="date-display" id="currentDateMaxi"></p>
+        </header>
+        
+        <main class="maxi-form">
+            <div class="form-group">
+                <label>Lista ad-hoc (Selección múltiple):</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="jugador_GENERAL" value="GENERAL">
+                        <label for="jugador_GENERAL">GENERAL</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="jugador_Fer" value="Fer">
+                        <label for="jugador_Fer">1. Fer</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="jugador_Antuene" value="Antuene">
+                        <label for="jugador_Antuene">2. Antuene</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="jugador_Juan_Muñoz" value="Juan Muñoz">
+                        <label for="jugador_Juan_Muñoz">3. Juan Muñoz</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="jugador_Iván" value="Iván">
+                        <label for="jugador_Iván">4. Iván</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="jugador_David" value="David">
+                        <label for="jugador_David">5. David</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="jugador_Manu" value="Manu">
+                        <label for="jugador_Manu">6. Manu</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="jugador_Fresnillo" value="Fresnillo">
+                        <label for="jugador_Fresnillo">7. Fresnillo</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="jugador_Ricardo" value="Ricardo">
+                        <label for="jugador_Ricardo">8. Ricardo</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="jugador_Jorge_Fernández" value="Jorge Fernández">
+                        <label for="jugador_Jorge_Fernández">9. Jorge Fernández</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="jugador_Javi_f" value="Javi f">
+                        <label for="jugador_Javi_f">10. Javi f</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="jugador_Mont" value="Mont">
+                        <label for="jugador_Mont">11. Mont</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="jugador_Bou" value="Bou">
+                        <label for="jugador_Bou">12. Bou</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="jugador_Lucas_Pinto" value="Lucas Pinto">
+                        <label for="jugador_Lucas_Pinto">13. Lucas Pinto</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="jugador_José_San_Millán" value="José San Millán">
+                        <label for="jugador_José_San_Millán">14. José San Millán</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="jugador_Edu" value="Edu">
+                        <label for="jugador_Edu">15. Edu</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="jugador_Nico_Gonzalo" value="Nico Gonzalo">
+                        <label for="jugador_Nico_Gonzalo">16. Nico Gonzalo</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="jugador_Aarón" value="Aarón">
+                        <label for="jugador_Aarón">17. Aarón</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="jugador_Juan_García" value="Juan García">
+                        <label for="jugador_Juan_García">18. Juan García</label>
+                    </div>
+                </div>
+                <small class="form-help">💡 Toca los checkboxes para seleccionar múltiples jugadores</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="tipoSelect">Tipo:</label>
+                <select id="tipoSelect" class="form-control">
+                    <option value="">Selecciona un tipo</option>
+                    <option value="ATAQUE">ATAQUE</option>
+                    <option value="DEFENSA">DEFENSA</option>
+                    <option value="N/A">N/A</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="textoInput">Texto:</label>
+                <textarea id="textoInput" class="form-control" rows="4" placeholder="Escribe aquí..."></textarea>
+            </div>
+            
+            <div class="form-actions">
+                <button class="save-button" onclick="guardarDatosMaxi()">
+                    💾 Guardar Datos
+                </button>
+            </div>
+        </main>
+        
+        <footer>
+            <button class="nav-button" onclick="window.location.href='index.html'">
+                🏠 Volver al Inicio
+            </button>
+        </footer>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html> 

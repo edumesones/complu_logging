@@ -37,6 +37,9 @@ document.addEventListener('DOMContentLoaded', function() {
     } else if (currentPage === 'ana.html') {
         mostrarFechaEnPagina('currentDateAna');
         cargarDatosAna();
+    } else if (currentPage === 'maxi.html') {
+        mostrarFechaEnPagina('currentDateMaxi');
+        cargarDatosMaxi();
     } else if (currentPage === 'index.html' || currentPage === '') {
         // Página principal
         cargarDatosGuardados();
@@ -109,6 +112,9 @@ function verificarNuevoDia() {
         
         // Limpiar datos de Ana
         localStorage.removeItem('datos_ana');
+        
+        // Limpiar datos de MAXI
+        localStorage.removeItem('datos_maxi');
         
         console.log('🧹 Datos limpiados para el nuevo día');
         
@@ -304,11 +310,13 @@ async function sendEmail() {
         const tablaContraHTML = crearTablaContraHTML(datos);
         const resumenHTML = crearResumenHTML(datos);
         const seccionAnaHTML = crearSeccionAnaHTML();
+        const seccionMaxiHTML = crearSeccionMaxiHTML();
         
         console.log('🔍 HTML PC A FAVOR:', tablaFavorHTML);
         console.log('🔍 HTML PC EN CONTRA:', tablaContraHTML);
         console.log('🔍 HTML Resumen:', resumenHTML);
         console.log('🔍 HTML Ana:', seccionAnaHTML);
+        console.log('🔍 HTML MAXI:', seccionMaxiHTML);
         
         const response = await emailjs.send(
             config.serviceId,
@@ -318,7 +326,8 @@ async function sendEmail() {
                 tabla_favor: tablaFavorHTML,
                 tabla_contra: tablaContraHTML,
                 resumen: resumenHTML,
-                seccion_ana: seccionAnaHTML
+                seccion_ana: seccionAnaHTML,
+                seccion_maxi: seccionMaxiHTML
             }
         );
         
@@ -414,6 +423,9 @@ function limpiarDatosManual() {
         
         // Limpiar datos de Ana
         localStorage.removeItem('datos_ana');
+        
+        // Limpiar datos de MAXI
+        localStorage.removeItem('datos_maxi');
         
         alert('✅ Todos los datos han sido limpiados. La página se recargará.');
         location.reload();
@@ -679,6 +691,95 @@ function crearSeccionAnaHTML() {
         html += '<tr>';
         html += '<td style="font-weight:bold;">' + dato.jugador + '</td>';
         html += '<td>' + dato.disponible + '</td>';
+        html += '<td>' + (dato.texto || '-') + '</td>';
+        html += '</tr>';
+    });
+    
+    html += '</tbody></table>';
+    return html;
+} 
+
+// ===== FUNCIONES PARA LA INTERFAZ MAXI =====
+
+// Guardar datos de MAXI
+function guardarDatosMaxi() {
+    const tipo = document.getElementById('tipoSelect').value;
+    const texto = document.getElementById('textoInput').value;
+    
+    // Obtener jugadores seleccionados (checkboxes)
+    const checkboxes = document.querySelectorAll('.checkbox-group input[type="checkbox"]:checked');
+    const jugadoresSeleccionados = Array.from(checkboxes).map(checkbox => checkbox.value);
+    
+    // Validar que se haya seleccionado al menos un jugador
+    if (jugadoresSeleccionados.length === 0) {
+        alert('❌ Por favor, selecciona al menos un jugador o GENERAL');
+        return;
+    }
+    
+    // Validar que se haya seleccionado un tipo
+    if (!tipo) {
+        alert('❌ Por favor, selecciona un tipo');
+        return;
+    }
+    
+    // Guardar datos en localStorage
+    const datosMaxi = {
+        jugadores: jugadoresSeleccionados,
+        tipo: tipo,
+        texto: texto,
+        fecha: new Date().toISOString()
+    };
+    
+    // Obtener datos existentes o crear array vacío
+    const datosExistentes = JSON.parse(localStorage.getItem('datos_maxi') || '[]');
+    
+    // Añadir nuevo registro
+    datosExistentes.push(datosMaxi);
+    
+    // Guardar en localStorage
+    localStorage.setItem('datos_maxi', JSON.stringify(datosExistentes));
+    
+    // Limpiar formulario
+    document.querySelectorAll('.checkbox-group input[type="checkbox"]').forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    document.getElementById('tipoSelect').value = '';
+    document.getElementById('textoInput').value = '';
+    
+    alert('✅ Datos guardados correctamente');
+}
+
+// Cargar datos de MAXI (para mostrar en el formulario si es necesario)
+function cargarDatosMaxi() {
+    // Por ahora solo cargamos la fecha
+    // Los datos se cargan automáticamente desde localStorage
+    console.log('📋 Interfaz MAXI cargada');
+}
+
+// Obtener datos de MAXI para el email
+function obtenerDatosMaxi() {
+    return JSON.parse(localStorage.getItem('datos_maxi') || '[]');
+}
+
+// Crear HTML para la sección MAXI en el email
+function crearSeccionMaxiHTML() {
+    const datosMaxi = obtenerDatosMaxi();
+    
+    if (datosMaxi.length === 0) {
+        return '<p style="color: #666; font-style: italic;">No hay datos registrados en MAXI.</p>';
+    }
+    
+    let html = '<table border="1" cellpadding="5" cellspacing="0" style="width:100%; border-collapse:collapse;">';
+    html += '<thead><tr style="background-color:#f8f9fa;">';
+    html += '<th>Jugadores</th>';
+    html += '<th>Tipo</th>';
+    html += '<th>Texto</th>';
+    html += '</tr></thead><tbody>';
+    
+    datosMaxi.forEach(dato => {
+        html += '<tr>';
+        html += '<td style="font-weight:bold;">' + dato.jugadores.join(', ') + '</td>';
+        html += '<td>' + dato.tipo + '</td>';
         html += '<td>' + (dato.texto || '-') + '</td>';
         html += '</tr>';
     });
