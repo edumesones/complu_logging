@@ -573,9 +573,9 @@ async function sendEmail() {
         console.log('📧 Enviando email...');
         
         // Debug: mostrar el HTML que se está enviando
-        const tablaFavorHTML = crearTablaFavorHTML(datos.pcFavor);
-        const tablaContraHTML = crearTablaContraHTML(datos.pcContra);
-        const resumenHTML = crearResumenHTML(datos.pcFavor, datos.pcContra);
+        const tablaFavorHTML = crearTablaFavorHTML(datos);
+        const tablaContraHTML = crearTablaContraHTML(datos);
+        const resumenHTML = crearResumenHTML(datos);
         const seccionAnaHTML = crearSeccionAnaHTML();
         const seccionMaxiHTML = crearSeccionMaxiHTML();
         
@@ -893,6 +893,14 @@ function crearTablaContraHTML(datos) {
 
 // Crear resumen HTML
 function crearResumenHTML(datos) {
+    console.log('🔍 crearResumenHTML - datos recibidos:', datos);
+    
+    // Validar que los datos existan
+    if (!datos || !datos.pcFavor || !datos.pcContra) {
+        console.log('⚠️ No hay datos completos disponibles para el resumen');
+        return '<p style="color: #666; font-style: italic;">No hay datos disponibles para generar el resumen.</p>';
+    }
+    
     // Calcular totales
     let totalesFavor = {
         SACA_BIEN: 0, SACA_MAL: 0, PARA_BIEN: 0, PARA_MAL: 0,
@@ -902,13 +910,19 @@ function crearResumenHTML(datos) {
     let totalesContra = { PENALTY: 0, PENALTY_TONTO: 0 };
     
     jugadores.forEach(jugador => {
-        ['SACA_BIEN', 'SACA_MAL', 'PARA_BIEN', 'PARA_MAL', 'GOL', 'TIRO_PORTERIA', 'TIRO_FUERA'].forEach(columna => {
-            totalesFavor[columna] += datos.pcFavor[jugador][columna];
-        });
+        // Validar que el jugador exista en pcFavor
+        if (datos.pcFavor[jugador]) {
+            ['SACA_BIEN', 'SACA_MAL', 'PARA_BIEN', 'PARA_MAL', 'GOL', 'TIRO_PORTERIA', 'TIRO_FUERA'].forEach(columna => {
+                totalesFavor[columna] += (datos.pcFavor[jugador][columna] || 0);
+            });
+        }
         
-        ['PENALTY', 'PENALTY_TONTO'].forEach(columna => {
-            totalesContra[columna] += datos.pcContra[jugador][columna];
-        });
+        // Validar que el jugador exista en pcContra
+        if (datos.pcContra[jugador]) {
+            ['PENALTY', 'PENALTY_TONTO'].forEach(columna => {
+                totalesContra[columna] += (datos.pcContra[jugador][columna] || 0);
+            });
+        }
     });
     
     // Filtrar solo estadísticas > 0
