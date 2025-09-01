@@ -635,6 +635,9 @@ async function recopilarDatos() {
     
     // Fallback: usar datos del cache actual si Supabase falla
     console.log('🔄 Usando datos del cache como fallback');
+    console.log('🔍 Cache actual:', valoresCache);
+    console.log('🔍 Jugadores disponibles:', jugadores);
+    
     const datos = {
         fecha: new Date().toLocaleDateString('es-ES', {
             weekday: 'long',
@@ -671,6 +674,10 @@ async function recopilarDatos() {
     // Añadir datos de Ana y MAXI desde localStorage
     datos.ana = obtenerDatosAna();
     datos.maxi = obtenerDatosMaxi();
+    
+    console.log('✅ Datos finales estructurados:', datos);
+    console.log('🔍 pcFavor keys:', Object.keys(datos.pcFavor));
+    console.log('🔍 pcContra keys:', Object.keys(datos.pcContra));
     
     return datos;
 }
@@ -750,10 +757,23 @@ function exportarDatos() {
 
 // Crear tabla HTML para PC A FAVOR
 function crearTablaFavorHTML(datos) {
+    console.log('🔍 crearTablaFavorHTML - datos recibidos:', datos);
+    
+    // Validar que los datos existan
+    if (!datos || !datos.pcFavor) {
+        console.log('⚠️ No hay datos de pcFavor disponibles');
+        return '<p style="color: #666; font-style: italic;">No hay datos disponibles para PC A FAVOR.</p>';
+    }
+    
     // Filtrar solo jugadores con estadísticas > 0
     const jugadoresConEstadisticas = jugadores.filter(jugador => {
         const columnas = ['SACA_BIEN', 'SACA_MAL', 'PARA_BIEN', 'PARA_MAL', 'GOL', 'TIRO_PORTERIA', 'TIRO_FUERA'];
-        return columnas.some(columna => datos.pcFavor[jugador][columna] > 0);
+        // Validar que el jugador exista en los datos
+        if (!datos.pcFavor[jugador]) {
+            console.log(`⚠️ Jugador ${jugador} no encontrado en pcFavor`);
+            return false;
+        }
+        return columnas.some(columna => (datos.pcFavor[jugador][columna] || 0) > 0);
     });
     
     // Si no hay estadísticas, mostrar mensaje
@@ -813,10 +833,23 @@ function crearTablaFavorHTML(datos) {
 
 // Crear tabla HTML para PC EN CONTRA
 function crearTablaContraHTML(datos) {
+    console.log('🔍 crearTablaContraHTML - datos recibidos:', datos);
+    
+    // Validar que los datos existan
+    if (!datos || !datos.pcContra) {
+        console.log('⚠️ No hay datos de pcContra disponibles');
+        return '<p style="color: #666; font-style: italic;">No hay datos disponibles para PC EN CONTRA.</p>';
+    }
+    
     // Filtrar solo jugadores con estadísticas > 0
     const jugadoresConEstadisticas = jugadores.filter(jugador => {
         const columnas = ['PENALTY', 'PENALTY_TONTO'];
-        return columnas.some(columna => datos.pcContra[jugador][columna] > 0);
+        // Validar que el jugador exista en los datos
+        if (!datos.pcContra[jugador]) {
+            console.log(`⚠️ Jugador ${jugador} no encontrado en pcContra`);
+            return false;
+        }
+        return columnas.some(columna => (datos.pcContra[jugador][columna] || 0) > 0);
     });
     
     // Si no hay estadísticas, mostrar mensaje
