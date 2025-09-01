@@ -5,6 +5,27 @@ const jugadores = [
     'Edu', 'Nico Gonzalo', 'Aarón', 'Juan García'
 ];
 
+// Verificar si Firebase está disponible
+function isFirebaseAvailable() {
+    return typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length > 0;
+}
+
+// Mostrar indicador de sincronización
+function mostrarSyncIndicator() {
+    const indicator = document.getElementById('syncIndicator');
+    if (indicator) {
+        indicator.classList.add('syncing');
+    }
+}
+
+// Ocultar indicador de sincronización
+function ocultarSyncIndicator() {
+    const indicator = document.getElementById('syncIndicator');
+    if (indicator) {
+        indicator.classList.remove('syncing');
+    }
+}
+
 // La configuración de EmailJS se carga desde config.js
 // No declarar EMAILJS_CONFIG aquí para evitar conflictos
 
@@ -237,17 +258,29 @@ async function cambiarContador(jugador, columna, cambio, tipo) {
     const clave = `${tipo}_${jugador}_${columna}`;
     localStorage.setItem(clave, nuevoValor.toString());
     
-    // Sincronizar con Firebase
-    if (tipo === 'favor') {
-        await syncFavorData(jugador, columna, nuevoValor);
-    } else if (tipo === 'contra') {
-        await syncContraData(jugador, columna, nuevoValor);
-    }
-    
-    // Actualizar en la interfaz
+    // ✅ ACTUALIZAR UI INMEDIATAMENTE
     const elemento = document.getElementById(`${tipo}_${jugador}_${columna}`);
     if (elemento) {
         elemento.textContent = nuevoValor;
+    }
+    
+    // 🔄 Firebase en segundo plano (no bloquea la UI)
+    if (isFirebaseAvailable()) {
+        // Usar setTimeout para no bloquear la UI
+        setTimeout(async () => {
+            try {
+                if (tipo === 'favor') {
+                    await syncFavorData(jugador, columna, nuevoValor);
+                } else if (tipo === 'contra') {
+                    await syncContraData(jugador, columna, nuevoValor);
+                }
+            } catch (error) {
+                console.error('❌ Error sincronizando con Firebase:', error);
+                // Continuar sin Firebase - los datos están en localStorage
+            }
+        }, 0);
+    } else {
+        console.log('⚠️ Firebase no disponible, usando solo localStorage');
     }
 }
 
@@ -352,56 +385,68 @@ async function sendEmail() {
 
 // Recopilar todos los datos
 async function recopilarDatos() {
-    // Obtener datos desde Firebase (consolidados de todos los dispositivos)
-    const firebaseData = await getAllDataForEmail();
-    
-    if (firebaseData) {
-        // Usar datos de Firebase
-        return {
-            fecha: new Date().toLocaleDateString('es-ES', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            }),
-            pcFavor: firebaseData.pcFavor,
-            pcContra: firebaseData.pcContra,
-            ana: firebaseData.ana,
-            maxi: firebaseData.maxi
-        };
-    } else {
-        // Fallback a datos locales si Firebase falla
-        const datos = {
-            fecha: new Date().toLocaleDateString('es-ES', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            }),
-            pcFavor: {},
-            pcContra: {}
-        };
+    try {
+        // Intentar obtener datos desde Firebase (consolidados de todos los dispositivos)
+        const firebaseData = await getAllDataForEmail();
         
-        // Recopilar datos PC A FAVOR
-        const columnasFavor = ['SACA_BIEN', 'SACA_MAL', 'PARA_BIEN', 'PARA_MAL', 'GOL', 'TIRO_PORTERIA', 'TIRO_FUERA'];
-        jugadores.forEach(jugador => {
-            datos.pcFavor[jugador] = {};
-            columnasFavor.forEach(columna => {
-                datos.pcFavor[jugador][columna] = obtenerValor(jugador, columna, 'favor');
-            });
-        });
-        
-        // Recopilar datos PC EN CONTRA
-        const columnasContra = ['PENALTY', 'PENALTY_TONTO'];
-        jugadores.forEach(jugador => {
-            datos.pcContra[jugador] = {};
-            columnasContra.forEach(columna => {
-                datos.pcContra[jugador][columna] = obtenerValor(jugador, columna, 'contra');
-            });
-        });
-        
-        return datos;
+        if (firebaseData && firebaseData.pcFavor && firebaseData.pcContra) {
+            console.log('✅ Usando datos de Firebase:', firebaseData);
+            // Usar datos de Firebase
+            return {
+                fecha: new Date().toLocaleDateString('es-ES', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                }),
+                pcFavor: firebaseData.pcFavor,
+                pcContra: firebaseData.pcContra,
+                ana: firebaseData.ana || [],
+                maxi: firebaseData.maxi || []
+            };
+        }
+    } catch (error) {
+        console.error('❌ Error obteniendo datos de Firebase:', error);
     }
+    
+    // Fallback a datos locales si Firebase falla
+    console.log('🔄 Usando datos locales como fallback');
+    const datos = {
+        fecha: new Date().toLocaleDateString('es-ES', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        }),
+        pcFavor: {},
+        pcContra: {},
+        ana: [],
+        maxi: []
+    };
+    
+    // Recopilar datos PC A FAVOR
+    const columnasFavor = ['SACA_BIEN', 'SACA_MAL', 'PARA_BIEN', 'PARA_MAL', 'GOL', 'TIRO_PORTERIA', 'TIRO_FUERA'];
+    jugadores.forEach(jugador => {
+        datos.pcFavor[jugador] = {};
+        columnasFavor.forEach(columna => {
+            datos.pcFavor[jugador][columna] = obtenerValor(jugador, columna, 'favor');
+        });
+    });
+    
+    // Recopilar datos PC EN CONTRA
+    const columnasContra = ['PENALTY', 'PENALTY_TONTO'];
+    jugadores.forEach(jugador => {
+        datos.pcContra[jugador] = {};
+        columnasContra.forEach(columna => {
+            datos.pcContra[jugador][columna] = obtenerValor(jugador, columna, 'contra');
+        });
+    });
+    
+    // Añadir datos de Ana y MAXI desde localStorage
+    datos.ana = obtenerDatosAna();
+    datos.maxi = obtenerDatosMaxi();
+    
+    return datos;
 }
 
 // Esta función ya no se usa, se reemplazó por las funciones específicas
@@ -685,8 +730,16 @@ async function guardarDatosAna() {
     // Guardar en localStorage
     localStorage.setItem('datos_ana', JSON.stringify(datosExistentes));
     
-    // Sincronizar con Firebase
-    await syncAnaData(jugador, disponible, texto);
+    // Sincronizar con Firebase solo si está disponible
+    if (isFirebaseAvailable()) {
+        try {
+            await syncAnaData(jugador, disponible, texto);
+        } catch (error) {
+            console.error('❌ Error sincronizando Ana con Firebase:', error);
+        }
+    } else {
+        console.log('⚠️ Firebase no disponible, usando solo localStorage');
+    }
     
     // Limpiar formulario
     document.getElementById('jugadorSelect').value = '';
@@ -776,8 +829,16 @@ async function guardarDatosMaxi() {
     // Guardar en localStorage
     localStorage.setItem('datos_maxi', JSON.stringify(datosExistentes));
     
-    // Sincronizar con Firebase
-    await syncMaxiData(jugadoresSeleccionados, tipo, texto);
+    // Sincronizar con Firebase solo si está disponible
+    if (isFirebaseAvailable()) {
+        try {
+            await syncMaxiData(jugadoresSeleccionados, tipo, texto);
+        } catch (error) {
+            console.error('❌ Error sincronizando MAXI con Firebase:', error);
+        }
+    } else {
+        console.log('⚠️ Firebase no disponible, usando solo localStorage');
+    }
     
     // Limpiar formulario
     document.querySelectorAll('.checkbox-group input[type="checkbox"]').forEach(checkbox => {

@@ -9,11 +9,16 @@
 <body>
     <div class="container">
         <header>
-            <h1>Complu Logging</h1>
-            <p class="date-display" id="currentDate"></p>
+            <h1>🏒 Complu Logging - Hockey</h1>
+            <p id="currentDate"></p>
         </header>
         
-        <main class="main-buttons">
+        <!-- Indicador de sincronización -->
+        <div id="syncIndicator" class="sync-indicator">
+            🔄 Sincronizando...
+        </div>
+        
+        <main>
             <button class="nav-button pc-favor" onclick="window.location.href='pc-favor.html'">
                 <span class="button-icon">⚽</span>
                 <span class="button-text">PC A FAVOR</span>
@@ -46,7 +51,7 @@
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <!-- Firebase SDK -->
+    <!-- Firebase SDK - Versión optimizada -->
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
     <!-- Configuración Firebase -->
