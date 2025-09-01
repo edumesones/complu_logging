@@ -19,4 +19,7 @@ node_modules/
 
 # Archivos temporales
 *.tmp
-*.temp 
+*.temp
+
+# Documentación de configuración (opcional)
+FIREBASE_SETUP.md 

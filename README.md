@@ -1,118 +1,205 @@
-# ⚽ Complu Logging - Aplicación de Estadísticas de Fútbol
+# 🏒 Complu Logging - Aplicación de Estadísticas de Hockey
 
-Aplicación web para registrar y enviar estadísticas de partidos de fútbol por email.
+> **Aplicación web moderna para registrar y sincronizar estadísticas de partidos de hockey entre múltiples dispositivos**
 
-## 🚀 Características
+[![Netlify Status](https://api.netlify.com/api/v1/badges/your-badge-id/deploy-status)](https://app.netlify.com/sites/your-site-name/deploys)
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live-brightgreen)](https://edumesones.github.io/complu_logging/)
+[![Firebase](https://img.shields.io/badge/Firebase-Realtime%20Database-orange)](https://firebase.google.com/)
 
-- **PC A FAVOR**: Registro de SACA_BIEN, SACA_MAL, PARA_BIEN, PARA_MAL, GOL, TIRO_PORTERIA, TIRO_FUERA
-- **PC EN CONTRA**: Registro de PENALTY y PENALTY_TONTO
+## 🚀 Características Principales
+
+### 📊 **Estadísticas Completas**
+- **🏆 PC A FAVOR**: SACA_BIEN, SACA_MAL, PARA_BIEN, PARA_MAL, GOL, TIRO_PORTERIA, TIRO_FUERA
+- **🛡️ PC EN CONTRA**: PENALTY y PENALTY_TONTO
+- **👤 Ana**: Gestión de disponibilidad de jugadores
+- **🚀 MAXI**: Gestión avanzada con multiselección
+
+### 🔄 **Sincronización Multi-Dispositivo**
+- **Firebase Realtime Database** para sincronización automática
+- **Datos consolidados** de todos los dispositivos
+- **Tiempo real** - cambios instantáneos
+- **Respaldo local** - funciona sin internet
+
+### 📱 **Interfaz Moderna**
+- **Responsive design** para tablets y móviles
 - **18 jugadores** predefinidos
-- **Envío automático por email** con reportes en HTML
-- **Reinicio automático diario** de contadores
-- **Botón manual** para limpiar datos
-- **Interfaz responsive** para tablets Android
+- **Contadores interactivos** con botones + y -
+- **Reinicio automático diario**
+- **Limpieza manual** de datos
+
+## 🏗️ Arquitectura Técnica
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Dispositivo A │    │   Dispositivo B │    │   Dispositivo C │
+│   (Tablet)      │    │   (Móvil)       │    │   (PC)          │
+└─────────┬───────┘    └─────────┬───────┘    └─────────┬───────┘
+          │                      │                      │
+          └──────────────────────┼──────────────────────┘
+                                 │
+                    ┌─────────────▼─────────────┐
+                    │      Firebase Cloud       │
+                    │      Firestore DB         │
+                    │   (Sincronización)        │
+                    └─────────────┬─────────────┘
+                                 │
+                    ┌─────────────▼─────────────┐
+                    │      EmailJS Service      │
+                    │   (Reportes por Email)    │
+                    └───────────────────────────┘
+```
+
+## 🛠️ Tecnologías Utilizadas
+
+- **Frontend**: HTML5, CSS3, JavaScript ES6+
+- **Base de Datos**: Firebase Firestore (Realtime)
+- **Email**: EmailJS
+- **Hosting**: Netlify / GitHub Pages
+- **Sincronización**: Firebase SDK
 
 ## 📱 Compatibilidad
 
-- ✅ **PC/Desktop** (Chrome, Firefox, Safari, Edge)
-- ✅ **Tablets Android** (Chrome, Firefox)
-- ✅ **Dispositivos iOS** (Safari)
-- ❌ **No requiere Java** - Solo navegador web
+| Plataforma | Navegador | Estado |
+|------------|-----------|--------|
+| **Android** | Chrome, Firefox | ✅ Perfecto |
+| **iOS** | Safari, Chrome | ✅ Perfecto |
+| **Windows** | Chrome, Firefox, Edge | ✅ Perfecto |
+| **macOS** | Safari, Chrome | ✅ Perfecto |
 
-## 🛠️ Instalación y Configuración
+> **❌ No requiere Java** - Solo navegador web moderno
 
-### 1. Configurar EmailJS (SEGURO para repositorios públicos)
+## 🚀 Instalación y Configuración
 
-1. Ve a [https://www.emailjs.com/](https://www.emailjs.com/)
-2. Crea una cuenta gratuita
-3. Configura un servicio de email (Gmail, Outlook, etc.)
-4. Crea una plantilla de email
-5. **IMPORTANTE**: Crea el archivo `config.local.js` con tus credenciales reales
+### 1. 🔥 Configurar Firebase (NUEVO)
 
-### 2. Configurar GitHub Pages
+1. Ve a [Firebase Console](https://console.firebase.google.com/)
+2. Crea proyecto: `complu-logging`
+3. Habilita **Firestore Database**
+4. Configura reglas de seguridad (ver `FIREBASE_SETUP.md`)
+5. Copia configuración a `firebase-config.js`
 
-1. Ve a tu repositorio: [https://github.com/edumesones/complu_logging](https://github.com/edumesones/complu_logging)
-2. Ve a **Settings** → **Pages**
-3. En **Source**, selecciona **Deploy from a branch**
-4. En **Branch**, selecciona **main** y **/(root)**
-5. Haz clic en **Save**
-6. Espera unos minutos para que se despliegue
+### 2. 📧 Configurar EmailJS
 
-### 3. Acceder desde tu Tablet
+1. Ve a [EmailJS](https://www.emailjs.com/)
+2. Crea cuenta gratuita
+3. Configura servicio de email
+4. Crea plantilla HTML
+5. **User ID se pide al usuario** (más seguro)
 
-- **URL pública**: `https://edumesones.github.io/complu_logging/`
-- **Acceso directo**: Crea un bookmark en tu tablet
-- **Funciona offline**: Los datos se guardan localmente
+### 3. 🌐 Desplegar en Netlify
 
-## 🔒 Seguridad para Repositorios Públicos
-
-### ¿Por qué es seguro?
-- **`config.js`**: Contiene valores de ejemplo (NO reales)
-- **GitHub Secrets**: Almacena credenciales reales de forma segura
-- **GitHub Actions**: Construye la aplicación con credenciales seguras
-- **Tu repositorio puede ser público** sin exponer credenciales
-
-### Archivos de configuración:
-- ✅ `config.js` → Se sube a GitHub (valores de ejemplo para desarrollo)
-- ✅ **GitHub Secrets** → Almacena credenciales reales de forma segura
-- ❌ `config.prod.js` → NO se sube a GitHub (generado automáticamente)
-- ❌ `.env` → NO se sube a GitHub (variables de entorno)
-
-## 📧 Configuración de EmailJS
-
-### PASO 1: Configurar GitHub Secrets
-
-Ve a tu repositorio en GitHub → **Settings** → **Secrets and variables** → **Actions**
-
-Crea estos 4 secrets:
-
-| Secret Name | Valor |
-|-------------|-------|
-| `EMAILJS_SERVICE_ID` | `service_xxxxxxx` (tu Service ID real) |
-| `EMAILJS_TEMPLATE_ID` | `template_xxxxxxx` (tu Template ID real) |
-| `EMAILJS_USER_ID` | `user_xxxxxxxxxxxxxxx` (tu User ID real) |
-| `EMAILJS_TO_EMAIL` | `tu-email@gmail.com, otro-email@gmail.com` (tus emails reales) |
-
-### PASO 2: Archivo `config.js` (desarrollo local)
-
-```javascript
-const EMAILJS_CONFIG = {
-    serviceId: 'service_xxxxxxx',        // VALOR DE EJEMPLO
-    templateId: 'template_xxxxxxx',      // VALOR DE EJEMPLO
-    userId: 'user_xxxxxxxxxxxxxxx',      // VALOR DE EJEMPLO
-    toEmail: 'tu-email@gmail.com, otro-email@gmail.com'  // VALOR DE EJEMPLO
-};
+#### **OPCIÓN A: Drag & Drop (Recomendado)**
+```bash
+# 1. Comprimir tu carpeta
+# 2. Ir a netlify.com
+# 3. Arrastrar archivo ZIP
+# 4. ¡Listo!
 ```
 
-**✅ SEGURO**: Este archivo contiene valores de ejemplo para desarrollo local.
+#### **OPCIÓN B: Desde GitHub**
+```bash
+# 1. Subir a GitHub
+git add .
+git commit -m "Initial commit"
+git push origin main
 
-### Plantilla EmailJS
+# 2. Conectar Netlify con GitHub
+# 3. Deploy automático
+```
 
-Usa esta plantilla HTML en EmailJS:
+## 🔒 Seguridad
 
+### ✅ **Configuración Segura**
+- **Firebase API Key**: Pública (diseñada para ser expuesta)
+- **EmailJS User ID**: Se pide al usuario (no en código)
+- **Reglas Firestore**: Controlan acceso a datos
+- **Repositorio público**: 100% seguro
+
+### 🛡️ **Protección de Datos**
+- Solo estadísticas deportivas (no datos personales)
+- Acceso controlado por reglas de Firestore
+- Datos se limpian automáticamente cada día
+
+## 📊 Uso Diario
+
+### **Flujo de Trabajo**
+1. **Abrir aplicación** en cualquier dispositivo
+2. **Registrar estadísticas** con botones + y -
+3. **Datos se sincronizan** automáticamente
+4. **Enviar reporte** consolidado por email
+5. **Contadores se reinician** automáticamente
+
+### **Ejemplo Multi-Dispositivo**
+```
+Dispositivo A: Fer - 5 goles
+Dispositivo B: Fer - 3 goles
+Dispositivo C: Fer - 2 goles
+─────────────────────────
+Resultado: Fer - 10 goles totales
+```
+
+## 📁 Estructura del Proyecto
+
+```
+complu_logging/
+├── 📄 index.html              # Página principal
+├── 📄 pc-favor.html           # Estadísticas PC A FAVOR
+├── 📄 pc-contra.html          # Estadísticas PC EN CONTRA
+├── 📄 ana.html                # Gestión de jugadores
+├── 📄 maxi.html               # Gestión avanzada
+├── 📄 script.js               # Lógica principal
+├── 📄 styles.css              # Estilos modernos
+├── 📄 firebase-config.js      # Configuración Firebase
+├── 📄 netlify.toml            # Configuración Netlify
+├── 📄 FIREBASE_SETUP.md       # Guía Firebase
+└── 📄 README.md               # Este archivo
+```
+
+## 🎯 Estadísticas Disponibles
+
+### **🏆 PC A FAVOR**
+| Estadística | Descripción |
+|-------------|-------------|
+| SACA_BIEN | Saques exitosos |
+| SACA_MAL | Saques fallidos |
+| PARA_BIEN | Paradas exitosas |
+| PARA_MAL | Paradas fallidas |
+| GOL | Goles marcados |
+| TIRO_PORTERIA | Tiros a portería |
+| TIRO_FUERA | Tiros fuera |
+
+### **🛡️ PC EN CONTRA**
+| Estadística | Descripción |
+|-------------|-------------|
+| PENALTY | Penalties cometidos |
+| PENALTY_TONTO | Penalties tontos |
+
+### **👤 Ana - Gestión de Jugadores**
+- Selección de jugador
+- Estado de disponibilidad (SI/NO)
+- Notas adicionales
+
+### **🚀 MAXI - Gestión Avanzada**
+- Multiselección de jugadores
+- Tipos: ATAQUE, DEFENSA, N/A
+- Notas detalladas
+
+## 📧 Configuración de Email
+
+### **Plantilla EmailJS**
 ```html
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Reporte Complu Logging</title>
+    <title>Reporte Complu Logging - Hockey</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
-        .container { max-width: 1000px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .header { background: linear-gradient(135deg, #4CAF50, #45a049); color: white; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 20px; }
-        .section { margin-bottom: 30px; }
-        .section h2 { color: #333; border-bottom: 2px solid #4CAF50; padding-bottom: 10px; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 12px; }
-        th, td { border: 1px solid #ddd; padding: 6px; text-align: center; }
-        th { background-color: #f8f9fa; font-weight: bold; }
-        .jugador { text-align: left; font-weight: bold; min-width: 120px; }
-        .total-row { background-color: #e8f5e8; font-weight: bold; }
-        .fecha-info { background: #e3f2fd; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #2196F3; }
+        /* Estilos modernos incluidos */
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>⚽ Reporte Complu Logging</h1>
+            <h1>🏒 Reporte Complu Logging</h1>
         </div>
         
         <div class="fecha-info">
@@ -130,6 +217,16 @@ Usa esta plantilla HTML en EmailJS:
             {{{tabla_contra}}}
         </div>
         
+        <div class="section ana-section">
+            <h2>👤 Ana - Gestión de Jugadores</h2>
+            {{{seccion_ana}}}
+        </div>
+        
+        <div class="section maxi-section">
+            <h2>🚀 MAXI - Gestión Avanzada</h2>
+            {{{seccion_maxi}}}
+        </div>
+        
         <div class="section">
             <h2>📊 Resumen</h2>
             {{{resumen}}}
@@ -139,122 +236,66 @@ Usa esta plantilla HTML en EmailJS:
 </html>
 ```
 
-**IMPORTANTE**: Usa `{{{tabla_favor}}}`, `{{{tabla_contra}}}` y `{{{resumen}}}` (triple llave) para renderizar HTML.
-
-## 🔄 Uso Diario
-
-1. **Abrir la aplicación** en tu tablet
-2. **Registrar estadísticas** usando los botones + y -
-3. **Enviar reporte** con el botón "📧 Enviar Reporte por Email"
-4. **Los contadores se reinician automáticamente** cada día
-5. **Usar "Limpiar Datos"** para reset manual
-
-## 📁 Estructura del Proyecto
-
-```
-complu_logging/
-├── index.html          # Página principal
-├── pc-favor.html       # Tabla PC A FAVOR
-├── pc-contra.html      # Tabla PC EN CONTRA
-├── script.js           # Lógica JavaScript
-├── styles.css          # Estilos CSS
-├── config.js           # Configuración EmailJS
-└── README.md           # Este archivo
-```
-
-## 🚀 DESPLIEGUE EN NETLIFY (RECOMENDADO)
-
-### ✅ VENTAJAS DE NETLIFY:
-
-- **Más rápido** que GitHub Pages
-- **Sin problemas** de credenciales
-- **HTTPS automático** incluido
-- **CDN global** para mejor rendimiento
-- **Dominio personalizado** opcional
-
-### PASO 1: Preparar archivos
-
-1. **Eliminar archivos innecesarios**:
-   ```bash
-   rm -rf .github/
-   rm config.js
-   rm package.json
-   ```
-
-2. **Mantener solo**:
-   - `index.html`
-   - `pc-favor.html`
-   - `pc-contra.html`
-   - `styles.css`
-   - `script.js`
-   - `netlify.toml`
-
-### PASO 2: Desplegar en Netlify
-
-#### **OPCIÓN A: Arrastrar y Soltar (Más Fácil)**
-
-1. Ve a [netlify.com](https://netlify.com)
-2. **Sign up** con tu cuenta de GitHub
-3. **Drag & Drop** tu carpeta del proyecto
-4. **¡Listo!** Tu app estará online
-
-#### **OPCIÓN B: Desde GitHub (Más Profesional)**
-
-1. **Sube tu código** a GitHub
-2. En Netlify: **New site from Git**
-3. Selecciona tu repositorio
-4. **Deploy** automático
-
-### PASO 3: Configurar dominio
-
-- **URL automática**: `https://random-name.netlify.app`
-- **HTTPS**: Automático y gratuito
-
-### PASO 4: Probar la aplicación
-
-1. **Accede** a tu URL de Netlify
-2. **Prueba** las funcionalidades
-3. **Envía email** (se pedirán credenciales)
-4. **Verifica** que funcione en tu tablet
-
-### Servidor Local (Desarrollo)
-```bash
-python -m http.server 8000
-# Luego abrir http://localhost:8000
-```
-
-## 📧 Emails Destino
-
-Los reportes se envían a:
+### **Destinatarios**
 - `e.gzlzmesones@gmail.com`
 - `cristian26gonzalez@gmail.com`
 
 ## 🐛 Solución de Problemas
 
-### Email no se envía
-1. Verifica configuración EmailJS en `config.js`
-2. Revisa la consola del navegador
-3. Verifica que EmailJS esté cargado
+### **❌ Email no se envía**
+```bash
+# 1. Verificar consola del navegador (F12)
+# 2. Comprobar User ID de EmailJS
+# 3. Verificar conexión a internet
+```
 
-### Datos no se guardan
-1. Verifica que localStorage esté habilitado
-2. Limpia caché del navegador
-3. Usa botón "Limpiar Datos" para reset
+### **❌ Datos no se sincronizan**
+```bash
+# 1. Verificar configuración Firebase
+# 2. Comprobar reglas de Firestore
+# 3. Revisar consola para errores
+```
 
-### No funciona en tablet
-1. Verifica conexión a internet
-2. Usa Chrome o Firefox
-3. Accede desde la URL de GitHub Pages
+### **❌ No funciona en tablet**
+```bash
+# 1. Usar Chrome o Firefox
+# 2. Verificar conexión a internet
+# 3. Limpiar caché del navegador
+```
+
+## 🔄 Changelog
+
+### **v2.0.0 - Firebase Integration**
+- ✅ Sincronización multi-dispositivo
+- ✅ Interfaz Ana y MAXI
+- ✅ Datos consolidados en emails
+- ✅ Limpieza automática global
+
+### **v1.0.0 - Initial Release**
+- ✅ Estadísticas básicas
+- ✅ Email con EmailJS
+- ✅ Interfaz responsive
 
 ## 📞 Soporte
 
-Para problemas técnicos:
-1. Revisa la consola del navegador (F12)
-2. Verifica la configuración de EmailJS
-3. Comprueba que GitHub Pages esté activado
+### **Documentación**
+- [Firebase Setup](FIREBASE_SETUP.md)
+- [EmailJS Documentation](https://www.emailjs.com/docs/)
+
+### **Contacto**
+- **Desarrollador**: Asistente AI
+- **Proyecto**: Complu Logging Hockey
+- **Versión**: 2.0.0
 
 ---
 
-**Desarrollado para Complu Logging** ⚽ / /   A c t i v a c i � n   d e   G i t H u b   A c t i o n s 
- 
- 
+<div align="center">
+
+**🏒 Desarrollado para Complu Logging Hockey**  
+*Sincronización multi-dispositivo con Firebase*
+
+[![Netlify](https://img.shields.io/badge/Netlify-Hosted-blue)](https://netlify.com)
+[![Firebase](https://img.shields.io/badge/Firebase-Realtime-orange)](https://firebase.google.com)
+[![EmailJS](https://img.shields.io/badge/EmailJS-Email-green)](https://emailjs.com)
+
+</div>
