@@ -229,13 +229,20 @@ function inicializarTablaContra() {
 }
 
 // Cambiar contador
-function cambiarContador(jugador, columna, cambio, tipo) {
+async function cambiarContador(jugador, columna, cambio, tipo) {
     const valorActual = obtenerValor(jugador, columna, tipo);
     const nuevoValor = Math.max(0, valorActual + cambio);
     
-    // Guardar en localStorage
+    // Guardar en localStorage (para respaldo local)
     const clave = `${tipo}_${jugador}_${columna}`;
     localStorage.setItem(clave, nuevoValor.toString());
+    
+    // Sincronizar con Firebase
+    if (tipo === 'favor') {
+        await syncFavorData(jugador, columna, nuevoValor);
+    } else if (tipo === 'contra') {
+        await syncContraData(jugador, columna, nuevoValor);
+    }
     
     // Actualizar en la interfaz
     const elemento = document.getElementById(`${tipo}_${jugador}_${columna}`);
@@ -299,16 +306,19 @@ async function sendEmail() {
         console.log('✅ EmailJS inicializado');
         
         // Recopilar datos
-        const datos = recopilarDatos();
+        const datos = await recopilarDatos();
         console.log('📊 Datos recopilados:', datos);
+        
+        // Guardar datos para usar en las funciones de HTML
+        window.currentEmailData = datos;
         
         // Enviar email
         console.log('📧 Enviando email...');
         
         // Debug: mostrar el HTML que se está enviando
-        const tablaFavorHTML = crearTablaFavorHTML(datos);
-        const tablaContraHTML = crearTablaContraHTML(datos);
-        const resumenHTML = crearResumenHTML(datos);
+        const tablaFavorHTML = crearTablaFavorHTML(datos.pcFavor);
+        const tablaContraHTML = crearTablaContraHTML(datos.pcContra);
+        const resumenHTML = crearResumenHTML(datos.pcFavor, datos.pcContra);
         const seccionAnaHTML = crearSeccionAnaHTML();
         const seccionMaxiHTML = crearSeccionMaxiHTML();
         
@@ -341,37 +351,57 @@ async function sendEmail() {
 }
 
 // Recopilar todos los datos
-function recopilarDatos() {
-    const datos = {
-        fecha: new Date().toLocaleDateString('es-ES', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        }),
-        pcFavor: {},
-        pcContra: {}
-    };
+async function recopilarDatos() {
+    // Obtener datos desde Firebase (consolidados de todos los dispositivos)
+    const firebaseData = await getAllDataForEmail();
     
-    // Recopilar datos PC A FAVOR
-    const columnasFavor = ['SACA_BIEN', 'SACA_MAL', 'PARA_BIEN', 'PARA_MAL', 'GOL', 'TIRO_PORTERIA', 'TIRO_FUERA'];
-    jugadores.forEach(jugador => {
-        datos.pcFavor[jugador] = {};
-        columnasFavor.forEach(columna => {
-            datos.pcFavor[jugador][columna] = obtenerValor(jugador, columna, 'favor');
+    if (firebaseData) {
+        // Usar datos de Firebase
+        return {
+            fecha: new Date().toLocaleDateString('es-ES', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            }),
+            pcFavor: firebaseData.pcFavor,
+            pcContra: firebaseData.pcContra,
+            ana: firebaseData.ana,
+            maxi: firebaseData.maxi
+        };
+    } else {
+        // Fallback a datos locales si Firebase falla
+        const datos = {
+            fecha: new Date().toLocaleDateString('es-ES', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            }),
+            pcFavor: {},
+            pcContra: {}
+        };
+        
+        // Recopilar datos PC A FAVOR
+        const columnasFavor = ['SACA_BIEN', 'SACA_MAL', 'PARA_BIEN', 'PARA_MAL', 'GOL', 'TIRO_PORTERIA', 'TIRO_FUERA'];
+        jugadores.forEach(jugador => {
+            datos.pcFavor[jugador] = {};
+            columnasFavor.forEach(columna => {
+                datos.pcFavor[jugador][columna] = obtenerValor(jugador, columna, 'favor');
+            });
         });
-    });
-    
-    // Recopilar datos PC EN CONTRA
-    const columnasContra = ['PENALTY', 'PENALTY_TONTO'];
-    jugadores.forEach(jugador => {
-        datos.pcContra[jugador] = {};
-        columnasContra.forEach(columna => {
-            datos.pcContra[jugador][columna] = obtenerValor(jugador, columna, 'contra');
+        
+        // Recopilar datos PC EN CONTRA
+        const columnasContra = ['PENALTY', 'PENALTY_TONTO'];
+        jugadores.forEach(jugador => {
+            datos.pcContra[jugador] = {};
+            columnasContra.forEach(columna => {
+                datos.pcContra[jugador][columna] = obtenerValor(jugador, columna, 'contra');
+            });
         });
-    });
-    
-    return datos;
+        
+        return datos;
+    }
 }
 
 // Esta función ya no se usa, se reemplazó por las funciones específicas
@@ -386,12 +416,15 @@ function limpiarDatos() {
 }
 
 // Función para limpiar datos manualmente
-function limpiarDatosManual() {
-    if (confirm('🗑️ ¿Estás seguro de que quieres limpiar TODOS los datos?\n\nEsto eliminará todas las estadísticas registradas.')) {
+async function limpiarDatosManual() {
+    if (confirm('🗑️ ¿Estás seguro de que quieres limpiar TODOS los datos?\n\nEsto eliminará todas las estadísticas registradas de TODOS los dispositivos.')) {
+        // Limpiar datos de Firebase (todos los dispositivos)
+        await clearDayData();
+        
         // Limpiar solo los datos de estadísticas, no la fecha
         const ultimaFecha = localStorage.getItem('ultima_fecha');
         
-        // Limpiar todos los datos de estadísticas
+        // Limpiar todos los datos de estadísticas locales
         const clavesParaLimpiar = [];
         
         // Limpiar datos PC A FAVOR
@@ -408,7 +441,7 @@ function limpiarDatosManual() {
             });
         });
         
-        // Eliminar todas las claves
+        // Eliminar todas las claves locales
         clavesParaLimpiar.forEach(clave => {
             localStorage.removeItem(clave);
         });
@@ -427,7 +460,7 @@ function limpiarDatosManual() {
         // Limpiar datos de MAXI
         localStorage.removeItem('datos_maxi');
         
-        alert('✅ Todos los datos han sido limpiados. La página se recargará.');
+        alert('✅ Todos los datos han sido limpiados de todos los dispositivos. La página se recargará.');
         location.reload();
     }
 }
@@ -610,7 +643,7 @@ function crearResumenHTML(datos) {
 // ===== FUNCIONES PARA LA INTERFAZ ANA =====
 
 // Guardar datos de Ana
-function guardarDatosAna() {
+async function guardarDatosAna() {
     const jugador = document.getElementById('jugadorSelect').value;
     const disponible = document.getElementById('disponibleSelect').value;
     const texto = document.getElementById('textoInput').value;
@@ -627,7 +660,7 @@ function guardarDatosAna() {
         return;
     }
     
-    // Guardar datos en localStorage
+    // Guardar datos en localStorage (para respaldo local)
     const datosAna = {
         jugador: jugador,
         disponible: disponible,
@@ -652,6 +685,9 @@ function guardarDatosAna() {
     // Guardar en localStorage
     localStorage.setItem('datos_ana', JSON.stringify(datosExistentes));
     
+    // Sincronizar con Firebase
+    await syncAnaData(jugador, disponible, texto);
+    
     // Limpiar formulario
     document.getElementById('jugadorSelect').value = '';
     document.getElementById('disponibleSelect').value = '';
@@ -674,9 +710,10 @@ function obtenerDatosAna() {
 
 // Crear HTML para la sección Ana en el email
 function crearSeccionAnaHTML() {
-    const datosAna = obtenerDatosAna();
+    // Usar datos de Firebase si están disponibles en recopilarDatos
+    const datosAna = window.currentEmailData?.ana || obtenerDatosAna();
     
-    if (datosAna.length === 0) {
+    if (!datosAna || datosAna.length === 0) {
         return '<p style="color: #666; font-style: italic;">No hay datos registrados en Ana.</p>';
     }
     
@@ -702,7 +739,7 @@ function crearSeccionAnaHTML() {
 // ===== FUNCIONES PARA LA INTERFAZ MAXI =====
 
 // Guardar datos de MAXI
-function guardarDatosMaxi() {
+async function guardarDatosMaxi() {
     const tipo = document.getElementById('tipoSelect').value;
     const texto = document.getElementById('textoInput').value;
     
@@ -722,7 +759,7 @@ function guardarDatosMaxi() {
         return;
     }
     
-    // Guardar datos en localStorage
+    // Guardar datos en localStorage (para respaldo local)
     const datosMaxi = {
         jugadores: jugadoresSeleccionados,
         tipo: tipo,
@@ -738,6 +775,9 @@ function guardarDatosMaxi() {
     
     // Guardar en localStorage
     localStorage.setItem('datos_maxi', JSON.stringify(datosExistentes));
+    
+    // Sincronizar con Firebase
+    await syncMaxiData(jugadoresSeleccionados, tipo, texto);
     
     // Limpiar formulario
     document.querySelectorAll('.checkbox-group input[type="checkbox"]').forEach(checkbox => {
@@ -763,9 +803,10 @@ function obtenerDatosMaxi() {
 
 // Crear HTML para la sección MAXI en el email
 function crearSeccionMaxiHTML() {
-    const datosMaxi = obtenerDatosMaxi();
+    // Usar datos de Firebase si están disponibles en recopilarDatos
+    const datosMaxi = window.currentEmailData?.maxi || obtenerDatosMaxi();
     
-    if (datosMaxi.length === 0) {
+    if (!datosMaxi || datosMaxi.length === 0) {
         return '<p style="color: #666; font-style: italic;">No hay datos registrados en MAXI.</p>';
     }
     
