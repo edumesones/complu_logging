@@ -807,7 +807,7 @@ function crearTablaFavorHTML(datos) {
         html += `<tr><td style="border: 1px solid #ddd; padding: 6px; text-align: left; font-weight: bold; min-width: 120px;">${jugador}</td>`;
         
         ['SACA_BIEN', 'SACA_MAL', 'PARA_BIEN', 'PARA_MAL', 'GOL', 'TIRO_PORTERIA', 'TIRO_FUERA'].forEach(columna => {
-            const valor = datos.pcFavor[jugador][columna];
+            const valor = datos.pcFavor[jugador][columna] || 0;
             totalesFavor[columna] += valor;
             html += `<td style="border: 1px solid #ddd; padding: 6px; text-align: center;">${valor}</td>`;
         });
@@ -872,7 +872,7 @@ function crearTablaContraHTML(datos) {
         html += '<tr><td style="font-weight:bold;">' + jugador + '</td>';
         
         ['PENALTY', 'PENALTY_TONTO'].forEach(columna => {
-            const valor = datos.pcContra[jugador][columna];
+            const valor = datos.pcContra[jugador][columna] || 0;
             totalesContra[columna] += valor;
             html += '<td>' + valor + '</td>';
         });
