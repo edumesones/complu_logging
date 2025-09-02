@@ -622,9 +622,9 @@ async function recopilarDatos() {
         // Intentar obtener datos desde Supabase (consolidados de todos los dispositivos)
         const supabaseData = await getAllDataForEmail();
         
-        if (supabaseData && supabaseData.pcFavor && supabaseData.pcContra) {
-            console.log('✅ Usando datos de Supabase:', supabaseData);
-            // Usar datos de Supabase
+        if (supabaseData) {
+            console.log('✅ Usando datos FRESCOS de Supabase:', supabaseData);
+            // Usar SOLO datos actuales de Supabase
             return {
                 fecha: new Date().toLocaleDateString('es-ES', {
                     weekday: 'long',
@@ -632,59 +632,33 @@ async function recopilarDatos() {
                     month: 'long',
                     day: 'numeric'
                 }),
-                pcFavor: supabaseData.pcFavor,
-                pcContra: supabaseData.pcContra,
+                pcFavor: supabaseData.pcFavor || {},
+                pcContra: supabaseData.pcContra || {},
                 ana: supabaseData.ana || [],
-                maxi: supabaseData.maxi || []
+                maxi: supabaseData.maxi || [],
+                cristian: supabaseData.cristian || []
+            };
+        } else {
+            // No hay datos en Supabase para hoy
+            console.log('📭 No hay datos en Supabase para hoy');
+            return {
+                fecha: new Date().toLocaleDateString('es-ES', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                }),
+                pcFavor: {},
+                pcContra: {},
+                ana: [],
+                maxi: [],
+                cristian: []
             };
         }
     } catch (error) {
-        console.error('❌ Error obteniendo datos de Supabase:', error);
+        console.error('❌ Error obteniendo datos frescos de Supabase:', error);
+        throw new Error(`No se pueden obtener datos actualizados de Supabase: ${error.message}`);
     }
-    
-    // Fallback: usar datos del cache actual si Supabase falla
-    console.log('🔄 Usando datos del cache como fallback');
-    console.log('🔍 Cache actual:', valoresCache);
-    console.log('🔍 Jugadores disponibles:', jugadores);
-    
-    const datos = {
-        fecha: new Date().toLocaleDateString('es-ES', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        }),
-        pcFavor: {},
-        pcContra: {},
-        ana: [],
-        maxi: []
-    };
-    
-    // Recopilar datos PC A FAVOR desde cache
-    const columnasFavor = ['SACA_BIEN', 'SACA_MAL', 'PARA_BIEN', 'PARA_MAL', 'GOL', 'TIRO_PORTERIA', 'TIRO_FUERA'];
-    jugadores.forEach(jugador => {
-        datos.pcFavor[jugador] = {};
-        columnasFavor.forEach(columna => {
-            const cacheKey = `favor_${jugador}_${columna}`;
-            datos.pcFavor[jugador][columna] = valoresCache[cacheKey] || 0;
-        });
-    });
-    
-    // Recopilar datos PC EN CONTRA desde cache
-    const columnasContra = ['PENALTY', 'PENALTY_TONTO'];
-    jugadores.forEach(jugador => {
-        datos.pcContra[jugador] = {};
-        columnasContra.forEach(columna => {
-            const cacheKey = `contra_${jugador}_${columna}`;
-            datos.pcContra[jugador][columna] = valoresCache[cacheKey] || 0;
-        });
-    });
-    
-            // Añadir datos de Ana, MAXI y Cristian desde localStorage
-        datos.ana = obtenerDatosAna();
-        datos.maxi = obtenerDatosMaxi();
-        datos.cristian = obtenerDatosCristian();
-    
     console.log('✅ Datos finales estructurados:', datos);
     console.log('🔍 pcFavor keys:', Object.keys(datos.pcFavor));
     console.log('🔍 pcContra keys:', Object.keys(datos.pcContra));
