@@ -267,6 +267,35 @@ async function syncMaxiData(jugadores, tipo, texto) {
     }
 }
 
+// Función para sincronizar datos Cristian
+async function syncCristianData(jugadores, tipo, texto) {
+    if (!supabase) {
+        console.log('⚠️ Supabase no disponible, no se puede sincronizar datos.');
+        return;
+    }
+    try {
+        const diaId = await getOrCreateDay();
+        if (!diaId) return;
+        
+        const { error } = await supabase
+            .from('cristian')
+            .insert({
+                dia_id: diaId,
+                jugadores: jugadores,
+                tipo: tipo,
+                texto: texto
+            });
+        
+        if (error) {
+            console.error('❌ Error sincronizando datos Cristian:', error);
+        } else {
+            console.log(`✅ Sincronizado Cristian: ${jugadores.join(', ')} - ${tipo}`);
+        }
+    } catch (error) {
+        console.error('❌ Error sincronizando datos Cristian:', error);
+    }
+}
+
 // Función para obtener todos los datos del día
 async function getAllDataForEmail() {
     if (!supabase) {
@@ -293,7 +322,8 @@ async function getAllDataForEmail() {
             pcFavor: {},
             pcContra: {},
             ana: [],
-            maxi: []
+            maxi: [],
+            cristian: []
         };
 
         // Obtener datos PC A FAVOR
@@ -348,6 +378,20 @@ async function getAllDataForEmail() {
         
         if (!maxiError && maxiData) {
             data.maxi = maxiData.map(row => ({
+                jugadores: row.jugadores,
+                tipo: row.tipo,
+                texto: row.texto
+            }));
+        }
+
+        // Obtener datos Cristian
+        const { data: cristianData, error: cristianError } = await supabase
+            .from('cristian')
+            .select('jugadores, tipo, texto')
+            .eq('dia_id', dia.id);
+        
+        if (!cristianError && cristianData) {
+            data.cristian = cristianData.map(row => ({
                 jugadores: row.jugadores,
                 tipo: row.tipo,
                 texto: row.texto
@@ -461,6 +505,17 @@ function setupRealtimeSync() {
     
     realtimeChannels.push(maxiChannel);
 
+    // Configurar listener para CRISTIAN
+    const cristianChannel = supabase
+        .channel('cristian_changes')
+        .on('postgres_changes',
+            { event: '*', schema: 'public', table: 'cristian' },
+            (payload) => handleCristianChange(payload)
+        )
+        .subscribe();
+    
+    realtimeChannels.push(cristianChannel);
+
     console.log('✅ Sincronización en tiempo real configurada');
 }
 
@@ -531,6 +586,18 @@ function handleMaxiChange(payload) {
     
     if (typeof updateMaxiDisplay === 'function') {
         updateMaxiDisplay(payload.new);
+    } else {
+        if (typeof cargarDatosDesdeSupabase === 'function') {
+            cargarDatosDesdeSupabase();
+        }
+    }
+}
+
+function handleCristianChange(payload) {
+    console.log('🔄 Cambio detectado en CRISTIAN:', payload);
+    
+    if (typeof updateCristianDisplay === 'function') {
+        updateCristianDisplay(payload.new);
     } else {
         if (typeof cargarDatosDesdeSupabase === 'function') {
             cargarDatosDesdeSupabase();

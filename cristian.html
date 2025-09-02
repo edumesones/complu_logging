@@ -3,95 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cristian - Gestión de Datos</title>
+    <title>Complu Logging - Cristian</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>🏥 Cristian - Gestión de Datos</h1>
-            <div class="date-display" id="currentDateCristian"></div>
+            <h1>Cristian - Gestión Avanzada</h1>
+            <p class="date-display" id="currentDateCristian"></p>
         </header>
-
-        <nav class="nav-menu">
-            <a href="index.html">🏠 Principal</a>
-            <a href="pc-favor.html">⚽ PC A FAVOR</a>
-            <a href="pc-contra.html">🔴 PC EN CONTRA</a>
-            <a href="ana.html">👩‍⚕️ Ana</a>
-            <a href="maxi.html">📊 Maxi</a>
-            <a href="cristian.html" class="active">🏥 Cristian</a>
-        </nav>
-
-        <main>
-            <div class="form-section">
-                <h2>📝 Registrar Datos de Cristian</h2>
-                
-                <form id="cristianForm" onsubmit="event.preventDefault(); guardarDatosCristian();">
-                    <div class="form-group">
-                        <label for="tipoSelect">Tipo de Dato:</label>
-                        <select id="tipoSelect" required>
-                            <option value="">Selecciona un tipo</option>
-                            <option value="Lesión">Lesión</option>
-                            <option value="Recuperación">Recuperación</option>
-                            <option value="Prevención">Prevención</option>
-                            <option value="Evaluación">Evaluación</option>
-                            <option value="Tratamiento">Tratamiento</option>
-                            <option value="Otro">Otro</option>
-                        </select>
+        
+        <main class="maxi-form">
+            <div class="form-group">
+                <label>Lista ad-hoc (Selección múltiple):</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="jugador_GENERAL" value="GENERAL">
+                        <label for="jugador_GENERAL">GENERAL</label>
                     </div>
-
-                    <div class="form-group">
-                        <label>Jugadores Afectados:</label>
-                        <div class="checkbox-group">
-                            <label><input type="checkbox" value="GENERAL"> GENERAL</label>
-                            <label><input type="checkbox" value="Fer"> Fer</label>
-                            <label><input type="checkbox" value="Antuene"> Antuene</label>
-                            <label><input type="checkbox" value="Juan Muñoz"> Juan Muñoz</label>
-                            <label><input type="checkbox" value="Iván"> Iván</label>
-                            <label><input type="checkbox" value="David"> David</label>
-                            <label><input type="checkbox" value="Manu"> Manu</label>
-                            <label><input type="checkbox" value="Fresnillo"> Fresnillo</label>
-                            <label><input type="checkbox" value="Ricardo"> Ricardo</label>
-                            <label><input type="checkbox" value="Jorge Fernández"> Jorge Fernández</label>
-                            <label><input type="checkbox" value="Javi f"> Javi f</label>
-                            <label><input type="checkbox" value="Mont"> Mont</label>
-                            <label><input type="checkbox" value="Bou"> Bou</label>
-                            <label><input type="checkbox" value="Lucas Pinto"> Lucas Pinto</label>
-                            <label><input type="checkbox" value="José San Millán"> José San Millán</label>
-                            <label><input type="checkbox" value="Edu"> Edu</label>
-                            <label><input type="checkbox" value="Nico Gonzalo"> Nico Gonzalo</label>
-                            <label><input type="checkbox" value="Aarón"> Aarón</label>
-                            <label><input type="checkbox" value="Juan García"> Juan García</label>
-                        </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="jugador_Fer" value="Fer">
+                        <label for="jugador_Fer">1. Fer</label>
                     </div>
-
-                    <div class="form-group">
-                        <label for="textoInput">Descripción/Notas:</label>
-                        <textarea id="textoInput" rows="4" placeholder="Describe los detalles, síntomas, tratamiento, etc."></textarea>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="jugador_Antuene" value="Antuene">
+                        <label for="jugador_Antuene">2. Antuene</label>
                     </div>
-
-                    <div class="form-actions">
-                        <button type="submit" class="btn-primary">💾 Guardar Datos</button>
-                        <button type="button" class="btn-secondary" onclick="limpiarFormularioCristian()">🧹 Limpiar</button>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="jugador_Juan_Muñoz" value="Juan Muñoz">
+                        <label for="jugador_Juan_Muñoz">3. Juan Muñoz</label>
                     </div>
-                </form>
-            </div>
-
-            <div class="data-section">
-                <h2>📊 Datos Registrados Hoy</h2>
-                <div id="datosCristianContainer">
-                    <p class="no-data">No hay datos registrados hoy</p>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="jugador_Iván" value="Iván">
+                        <label for="jugador_Iván">4. Iván</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="jugador_David" value="David">
+                        <label for="jugador_David">5. David</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="jugador_Manu" value="Manu">
+                        <label for="jugador_Manu">6. Manu</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="jugador_Fresnillo" value="Fresnillo">
+                        <label for="jugador_Fresnillo">7. Fresnillo</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="jugador_Ricardo" value="Ricardo">
+                        <label for="jugador_Ricardo">8. Ricardo</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="jugador_Jorge_Fernández" value="Jorge Fernández">
+                        <label for="jugador_Jorge_Fernández">9. Jorge Fernández</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="jugador_Javi_f" value="Javi f">
+                        <label for="jugador_Javi_f">10. Javi f</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="jugador_Mont" value="Mont">
+                        <label for="jugador_Mont">11. Mont</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="jugador_Bou" value="Bou">
+                        <label for="jugador_Bou">12. Bou</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="jugador_Lucas_Pinto" value="Lucas Pinto">
+                        <label for="jugador_Lucas_Pinto">13. Lucas Pinto</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="jugador_José_San_Millán" value="José San Millán">
+                        <label for="jugador_José_San_Millán">14. José San Millán</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="jugador_Edu" value="Edu">
+                        <label for="jugador_Edu">15. Edu</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="jugador_Nico_Gonzalo" value="Nico Gonzalo">
+                        <label for="jugador_Nico_Gonzalo">16. Nico Gonzalo</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="jugador_Aarón" value="Aarón">
+                        <label for="jugador_Aarón">17. Aarón</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="jugador_Juan_García" value="Juan García">
+                        <label for="jugador_Juan_García">18. Juan García</label>
+                    </div>
                 </div>
+                <small class="form-help">💡 Toca los checkboxes para seleccionar múltiples jugadores</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="tipoSelect">Tipo:</label>
+                <select id="tipoSelect" class="form-control">
+                    <option value="">Selecciona un tipo</option>
+                    <option value="Lesión">Lesión</option>
+                    <option value="Recuperación">Recuperación</option>
+                    <option value="Prevención">Prevención</option>
+                    <option value="Evaluación">Evaluación</option>
+                    <option value="Tratamiento">Tratamiento</option>
+                    <option value="Otro">Otro</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="textoInput">Texto:</label>
+                <textarea id="textoInput" class="form-control" rows="4" placeholder="Escribe aquí..."></textarea>
+            </div>
+            
+            <div class="form-actions">
+                <button class="save-button" onclick="guardarDatosCristian()">
+                    💾 Guardar Datos
+                </button>
             </div>
         </main>
-
+        
         <footer>
-            <p>&copy; 2024 Complu Logging - Cristian</p>
+            <button class="nav-button" onclick="window.location.href='index.html'">
+                🏠 Volver al Inicio
+            </button>
         </footer>
     </div>
+    
+    <!-- Firebase SDK -->
 
-    <!-- Scripts -->
+    <!-- Configuración Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <!-- Supabase SDK - CDN más confiable -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Fallback si el CDN falla -->
+    <script>
+        if (typeof window.supabase === 'undefined') {
+            console.log('⚠️ CDN de Supabase falló, cargando desde unpkg...');
+            const script = document.createElement('script');
+            script.src = 'https://unpkg.com/@supabase/supabase-js@2.38.4/dist/umd/supabase.js';
+            document.head.appendChild(script);
+        }
+    </script>
+    <!-- Configuración Supabase -->
     <script src="supabase-config.js"></script>
+    <!-- Verificación adicional para Cristian -->
+    <script>
+        // Verificar que Supabase se haya inicializado correctamente
+        setTimeout(() => {
+            if (typeof supabase === 'undefined' || supabase === null) {
+                console.log('🔄 Reintentando inicialización de Supabase en Cristian...');
+                if (typeof initializeSupabase === 'function') {
+                    initializeSupabase();
+                }
+            }
+            
+            // Inicializar sincronización en tiempo real
+            if (typeof initRealtimeSync === 'function') {
+                console.log('🔄 Iniciando sincronización en tiempo real...');
+                initRealtimeSync();
+            }
+        }, 500);
+    </script>
+    <!-- Configuración EmailJS temporal -->
+    <script src="config.js"></script>
+    <!-- Script principal -->
     <script src="script.js"></script>
 </body>
 </html>
