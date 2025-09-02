@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cristian - Gestión de Datos</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏥 Cristian - Gestión de Datos</h1>
+            <div class="date-display" id="currentDateCristian"></div>
+        </header>
+
+        <nav class="nav-menu">
+            <a href="index.html">🏠 Principal</a>
+            <a href="pc-favor.html">⚽ PC A FAVOR</a>
+            <a href="pc-contra.html">🔴 PC EN CONTRA</a>
+            <a href="ana.html">👩‍⚕️ Ana</a>
+            <a href="maxi.html">📊 Maxi</a>
+            <a href="cristian.html" class="active">🏥 Cristian</a>
+        </nav>
+
+        <main>
+            <div class="form-section">
+                <h2>📝 Registrar Datos de Cristian</h2>
+                
+                <form id="cristianForm" onsubmit="event.preventDefault(); guardarDatosCristian();">
+                    <div class="form-group">
+                        <label for="tipoSelect">Tipo de Dato:</label>
+                        <select id="tipoSelect" required>
+                            <option value="">Selecciona un tipo</option>
+                            <option value="Lesión">Lesión</option>
+                            <option value="Recuperación">Recuperación</option>
+                            <option value="Prevención">Prevención</option>
+                            <option value="Evaluación">Evaluación</option>
+                            <option value="Tratamiento">Tratamiento</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Jugadores Afectados:</label>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" value="GENERAL"> GENERAL</label>
+                            <label><input type="checkbox" value="Fer"> Fer</label>
+                            <label><input type="checkbox" value="Antuene"> Antuene</label>
+                            <label><input type="checkbox" value="Juan Muñoz"> Juan Muñoz</label>
+                            <label><input type="checkbox" value="Iván"> Iván</label>
+                            <label><input type="checkbox" value="David"> David</label>
+                            <label><input type="checkbox" value="Manu"> Manu</label>
+                            <label><input type="checkbox" value="Fresnillo"> Fresnillo</label>
+                            <label><input type="checkbox" value="Ricardo"> Ricardo</label>
+                            <label><input type="checkbox" value="Jorge Fernández"> Jorge Fernández</label>
+                            <label><input type="checkbox" value="Javi f"> Javi f</label>
+                            <label><input type="checkbox" value="Mont"> Mont</label>
+                            <label><input type="checkbox" value="Bou"> Bou</label>
+                            <label><input type="checkbox" value="Lucas Pinto"> Lucas Pinto</label>
+                            <label><input type="checkbox" value="José San Millán"> José San Millán</label>
+                            <label><input type="checkbox" value="Edu"> Edu</label>
+                            <label><input type="checkbox" value="Nico Gonzalo"> Nico Gonzalo</label>
+                            <label><input type="checkbox" value="Aarón"> Aarón</label>
+                            <label><input type="checkbox" value="Juan García"> Juan García</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="textoInput">Descripción/Notas:</label>
+                        <textarea id="textoInput" rows="4" placeholder="Describe los detalles, síntomas, tratamiento, etc."></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">💾 Guardar Datos</button>
+                        <button type="button" class="btn-secondary" onclick="limpiarFormularioCristian()">🧹 Limpiar</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="data-section">
+                <h2>📊 Datos Registrados Hoy</h2>
+                <div id="datosCristianContainer">
+                    <p class="no-data">No hay datos registrados hoy</p>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2024 Complu Logging - Cristian</p>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="supabase-config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
